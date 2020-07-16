@@ -1,5 +1,7 @@
 package backend.realestate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -11,7 +13,7 @@ public class News {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @Size(min = 3, max = 100, message = "Title phải lớn hơn 3 và bé hơn 100")
     @NotBlank(message = "Thông tin không được để trống")
@@ -20,16 +22,25 @@ public class News {
     private Integer views;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("comments")
     private List<Comment> comments;
 
     public News() {
     }
 
-    public Integer getId() {
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -49,7 +60,7 @@ public class News {
         this.views = views;
     }
 
-    public News(Integer id, @Size(min = 3, max = 100, message = "Title phải lớn hơn 3 và bé hơn 100") @NotBlank(message = "Thông tin không được để trống") String title, Integer views) {
+    public News(Long id, @Size(min = 3, max = 100, message = "Title phải lớn hơn 3 và bé hơn 100") @NotBlank(message = "Thông tin không được để trống") String title, Integer views) {
         this.id = id;
         this.title = title;
         this.views = views;

@@ -8,29 +8,26 @@ import javax.validation.constraints.NotBlank;
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
-    @NotBlank(message = "Ảnh không được bỏ trống")
     @Lob
     private String image;
-
-    @NotBlank(message = "Thông tin không được bỏ trống")
-    private Integer idSanPham;
 
     @NotBlank(message = "Thông tin không được bỏ trống")
     private String dinhDang;
 
     @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
     public Image() {
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -40,14 +37,6 @@ public class Image {
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public Integer getIdSanPham() {
-        return idSanPham;
-    }
-
-    public void setIdSanPham(Integer idSanPham) {
-        this.idSanPham = idSanPham;
     }
 
     public String getDinhDang() {
@@ -66,10 +55,9 @@ public class Image {
         this.product = product;
     }
 
-    public Image(Integer id, @NotBlank(message = "Ảnh không được bỏ trống") String image, @NotBlank(message = "Thông tin không được bỏ trống") Integer idSanPham, @NotBlank(message = "Thông tin không được bỏ trống") String dinhDang, Product product) {
+    public Image(Long id, @NotBlank(message = "Ảnh không được bỏ trống") String image, @NotBlank(message = "Thông tin không được bỏ trống") Long idSanPham, @NotBlank(message = "Thông tin không được bỏ trống") String dinhDang, Product product) {
         this.id = id;
         this.image = image;
-        this.idSanPham = idSanPham;
         this.dinhDang = dinhDang;
         this.product = product;
     }

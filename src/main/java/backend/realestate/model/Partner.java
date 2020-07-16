@@ -1,12 +1,13 @@
 package backend.realestate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "partner")
@@ -14,14 +15,14 @@ public class Partner {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @Size(min = 3, max = 100, message = "Tên phải lớn hơn 3 và bé hơn 100")
     @NotBlank(message = "Thông tin không được bỏ trống")
     private String tenDoiTac;
 
     @NotBlank
-    private Integer linhVuc;
+    private String linhVuc;
 
     @Size(max = 100, message = "Địa chỉ phải ít hơn 100 ký tự")
     @NotBlank(message = "Thông tin không được bỏ trống")
@@ -47,16 +48,17 @@ public class Partner {
     @JoinTable(name = "project_doitac",
         joinColumns = @JoinColumn(name = "idDoiTac"),
         inverseJoinColumns = @JoinColumn(name = "idProject"))
-    private Collection<Project> projects;
+    @JsonIgnoreProperties("projects")
+    private List<Project> projects;
 
     public Partner() {
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -68,11 +70,11 @@ public class Partner {
         this.tenDoiTac = tenDoiTac;
     }
 
-    public Integer getLinhVuc() {
+    public String getLinhVuc() {
         return linhVuc;
     }
 
-    public void setLinhVuc(Integer linhVuc) {
+    public void setLinhVuc(String linhVuc) {
         this.linhVuc = linhVuc;
     }
 
@@ -108,11 +110,11 @@ public class Partner {
         this.logo = logo;
     }
 
-    public Collection<Project> getProjects() {
+    public List<Project> getProjects() {
         return projects;
     }
 
-    public void setProjects(Collection<Project> projects) {
+    public void setProjects(List<Project> projects) {
         this.projects = projects;
     }
 
@@ -124,7 +126,7 @@ public class Partner {
         this.soVonDauTu = soVonDauTu;
     }
 
-    public Partner(Integer id, @Size(min = 3, max = 100, message = "Tên phải lớn hơn 3 và bé hơn 100") @NotBlank(message = "Thông tin không được bỏ trống") String tenDoiTac, @NotBlank Integer linhVuc, @Size(max = 100, message = "Địa chỉ phải ít hơn 100 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String diaChi, @Size(max = 12, message = "Số điện thoại phải ít hơn 12 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String sdt, @NotBlank @Size(max = 50) @Email(message = "Sai định dạng email") String email, String logo, @NotBlank(message = "Số vốn không được bỏ trống") Double soVonDauTu, Collection<Project> projects) {
+    public Partner(Long id, @Size(min = 3, max = 100, message = "Tên phải lớn hơn 3 và bé hơn 100") @NotBlank(message = "Thông tin không được bỏ trống") String tenDoiTac, @NotBlank String linhVuc, @Size(max = 100, message = "Địa chỉ phải ít hơn 100 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String diaChi, @Size(max = 12, message = "Số điện thoại phải ít hơn 12 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String sdt, @NotBlank @Size(max = 50) @Email(message = "Sai định dạng email") String email, String logo, @NotBlank(message = "Số vốn không được bỏ trống") Double soVonDauTu, List<Project> projects) {
         this.id = id;
         this.tenDoiTac = tenDoiTac;
         this.linhVuc = linhVuc;

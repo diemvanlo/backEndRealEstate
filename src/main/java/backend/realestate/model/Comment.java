@@ -9,7 +9,7 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     private Integer soSao;
 
@@ -22,11 +22,11 @@ public class Comment {
     public Comment() {
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -46,7 +46,7 @@ public class Comment {
         this.linhVuc = linhVuc;
     }
 
-    public Comment(Integer id, Integer soSao, @NotBlank String linhVuc, News news) {
+    public Comment(Long id, Integer soSao, @NotBlank String linhVuc, News news) {
         this.id = id;
         this.soSao = soSao;
         this.linhVuc = linhVuc;

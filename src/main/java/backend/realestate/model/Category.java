@@ -10,31 +10,31 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @NotBlank(message = "Thông tin không được để trống")
-    private Integer name;
+    private String name;
 
     public Category() {
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(Integer name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public Category(Integer id, @NotBlank(message = "Thông tin không được để trống") Integer name) {
+    public Category(Long id, @NotBlank(message = "Thông tin không được để trống") String name) {
         this.id = id;
         this.name = name;
     }

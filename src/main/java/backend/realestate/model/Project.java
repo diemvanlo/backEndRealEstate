@@ -1,7 +1,10 @@
 package backend.realestate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -9,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.sql.Date;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "project")
@@ -16,7 +20,7 @@ public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @Size(min = 3, max = 100, message = "Tên dự án phải lớn hơn 3 và ít hơn 100")
     @NotBlank(message = "Thông tin không được bỏ trống")
@@ -40,8 +44,12 @@ public class Project {
     @NotBlank(message = "Thông tin không được bỏ trống")
     private Date ngayBatDau;
 
+    @Lob
+    private String image;
+
     @ManyToMany(mappedBy = "projects")
-    private Collection<Partner> partners;
+    @JsonIgnoreProperties("partners")
+    private List<Partner> partners;
 
     @Size(max = 100)
     private String trangThai;
@@ -55,14 +63,28 @@ public class Project {
     @NotBlank
     private Double banKinh;
 
+    @OneToMany(mappedBy = "project",
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JsonIgnoreProperties("product")
+    private List<Product> product;
+
     public Project() {
     }
 
-    public Integer getId() {
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -114,11 +136,11 @@ public class Project {
         this.ngayBatDau = ngayBatDau;
     }
 
-    public Collection<Partner> getPartners() {
+    public List<Partner> getPartners() {
         return partners;
     }
 
-    public void setPartners(Collection<Partner> partners) {
+    public void setPartners(List<Partner> partners) {
         this.partners = partners;
     }
 
@@ -154,18 +176,5 @@ public class Project {
         this.banKinh = banKinh;
     }
 
-    public Project(Integer id, @Size(min = 3, max = 100, message = "Tên dự án phải lớn hơn 3 và ít hơn 100") @NotBlank(message = "Thông tin không được bỏ trống") String tenDuAn, @Size(max = 100, message = "Tên loại hình phải trong vòng 100 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String loaiHinh, @Size(max = 200, message = "Địa chỉ phải trong vòng 200 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String diaChi, @NotBlank(message = "Thông tin không được bỏ trống") String dienTich, @NotBlank(message = "Thông tin không được bỏ trống") String chiPhiDuAn, @NotBlank(message = "Thông tin không được bỏ trống") Date ngayBatDau, Collection<Partner> partners, @Size(max = 100) String trangThai, @NotBlank Double mapX, @NotBlank Double mapY, @NotBlank Double banKinh) {
-        this.id = id;
-        this.tenDuAn = tenDuAn;
-        this.loaiHinh = loaiHinh;
-        this.diaChi = diaChi;
-        this.dienTich = dienTich;
-        this.chiPhiDuAn = chiPhiDuAn;
-        this.ngayBatDau = ngayBatDau;
-        this.partners = partners;
-        this.trangThai = trangThai;
-        this.mapX = mapX;
-        this.mapY = mapY;
-        this.banKinh = banKinh;
-    }
+
 }
