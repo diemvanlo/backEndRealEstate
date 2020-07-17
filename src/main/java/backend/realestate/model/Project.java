@@ -72,6 +72,14 @@ public class Project {
     public Project() {
     }
 
+    public List<Product> getProduct() {
+        return product;
+    }
+
+    public void setProduct(List<Product> product) {
+        this.product = product;
+    }
+
     public String getImage() {
         return image;
     }
