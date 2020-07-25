@@ -35,13 +35,13 @@ public class Project {
     private String diaChi;
 
     @NotBlank(message = "Thông tin không được bỏ trống")
-    private String dienTich;
+    private Double dienTich;
 
     @NotBlank(message = "Thông tin không được bỏ trống")
-    private String chiPhiDuAn;
+    private Double chiPhiDuAn;
 
     @DateTimeFormat(pattern = "MM-dd-yyyy")
-    @NotBlank(message = "Thông tin không được bỏ trống")
+//    @NotBlank(message = "Thông tin không được bỏ trống")
     private Date ngayBatDau;
 
     @Lob
@@ -120,19 +120,19 @@ public class Project {
         this.diaChi = diaChi;
     }
 
-    public String getDienTich() {
+    public Double getDienTich() {
         return dienTich;
     }
 
-    public void setDienTich(String dienTich) {
+    public void setDienTich(Double dienTich) {
         this.dienTich = dienTich;
     }
 
-    public String getChiPhiDuAn() {
+    public Double getChiPhiDuAn() {
         return chiPhiDuAn;
     }
 
-    public void setChiPhiDuAn(String chiPhiDuAn) {
+    public void setChiPhiDuAn(Double chiPhiDuAn) {
         this.chiPhiDuAn = chiPhiDuAn;
     }
 
@@ -183,6 +183,5 @@ public class Project {
     public void setBanKinh(Double banKinh) {
         this.banKinh = banKinh;
     }
-
 
 }

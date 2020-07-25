@@ -32,7 +32,7 @@ public class ProjectController {
     ProjectRepository projectRepository;
 
     @PostMapping("/save")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Project project) throws IOException {
         projectRepository.save(project);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
@@ -72,7 +72,7 @@ public class ProjectController {
                 item -> item.getId().toString().contains(searchString.getSearchString())
                         || item.getTenDuAn().contains(searchString.getSearchString())
                         || item.getDiaChi().contains(searchString.getSearchString())
-                        || item.getDienTich().contains(searchString.getSearchString())
+                        || item.getDienTich().toString().contains(searchString.getSearchString())
                         || item.getNgayBatDau().toString().contains(searchString.getSearchString())
         ).collect(Collectors.toList());
         return new ResponseEntity<>(projects, HttpStatus.OK);

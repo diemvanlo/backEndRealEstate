@@ -32,7 +32,7 @@ public class CategoryController {
     CategoryRepository categoryRepository;
 
     @PostMapping("/save")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Category category) throws IOException {
         categoryRepository.save(category);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
