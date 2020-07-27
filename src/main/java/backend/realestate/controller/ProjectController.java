@@ -32,7 +32,7 @@ public class ProjectController {
     ProjectRepository projectRepository;
 
     @PostMapping("/save")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Project project) throws IOException {
         projectRepository.save(project);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);

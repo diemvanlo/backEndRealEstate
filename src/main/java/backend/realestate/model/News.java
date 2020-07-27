@@ -1,10 +1,13 @@
 package backend.realestate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -24,8 +27,40 @@ public class News {
     @OneToMany(cascade = CascadeType.ALL)
     @JsonIgnoreProperties("comments")
     private List<Comment> comments;
+    @Lob
+    private String content;
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDate;
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedDate;
 
     public News() {
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public List<Comment> getComments() {
@@ -60,9 +95,5 @@ public class News {
         this.views = views;
     }
 
-    public News(Long id, @Size(min = 3, max = 100, message = "Title phải lớn hơn 3 và bé hơn 100") @NotBlank(message = "Thông tin không được để trống") String title, Integer views) {
-        this.id = id;
-        this.title = title;
-        this.views = views;
-    }
+
 }
