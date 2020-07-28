@@ -29,6 +29,8 @@ public class News {
     private List<Comment> comments;
     @Lob
     private String content;
+    @Lob
+    private String image;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
@@ -41,6 +43,14 @@ public class News {
 
     public Date getCreatedDate() {
         return createdDate;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public void setCreatedDate(Date createdDate) {

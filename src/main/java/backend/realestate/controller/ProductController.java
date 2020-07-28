@@ -2,8 +2,8 @@ package backend.realestate.controller;
 
 import backend.realestate.message.request.SearchForm;
 import backend.realestate.message.response.ResponseMessage;
-import backend.realestate.model.Project;
-import backend.realestate.repository.ProjectRepository;
+import backend.realestate.model.Product;
+import backend.realestate.repository.ProductRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,52 +29,52 @@ public class ProductController {
     RoleRepository roleRepository;
 
     @Autowired
-    ProjectRepository projectRepository;
+    ProductRepository productRepository;
 
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> add(@Valid @RequestBody Project project) throws IOException {
-        projectRepository.save(project);
+    public ResponseEntity<?> add(@Valid @RequestBody Product product) throws IOException {
+        productRepository.save(product);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Project>> getAll() throws IOException {
-        List<Project> projects = projectRepository.findAll();
-        return new ResponseEntity<>(projects, HttpStatus.OK);
+    public ResponseEntity<List<Product>> getAll() throws IOException {
+        List<Product> products = productRepository.findAll();
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> showEditForm(@PathVariable Long id) {
-        Project project = projectRepository.findById(id).orElseThrow(()
+        Product product = productRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("Fail! -> Không tìm thấy phòng ban này"));
-        return new ResponseEntity<>(project, HttpStatus.OK);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @PostMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> delete(@RequestBody Long id) {
-        projectRepository.deleteById(id);
+        productRepository.deleteById(id);
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 
-    @PostMapping("/deleteProject")
+    @PostMapping("/deleteProduct")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteByProject(@RequestBody Project project) {
-        projectRepository.deleteById(project.getId());
+    public ResponseEntity<String> deleteByProduct(@RequestBody Product product) {
+        productRepository.deleteById(product.getId());
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 
     @PostMapping("/searchAllColumn")
     public ResponseEntity<?> showEditForm(@RequestBody SearchForm searchString) {
-        List<Project> projects = projectRepository.findAll();
-        projects = projects.stream().filter(
+        List<Product> products = productRepository.findAll();
+        products = products.stream().filter(
                 item -> item.getId().toString().contains(searchString.getSearchString())
-                        || item.getTenDuAn().contains(searchString.getSearchString())
+                        || item.getTenSanPham().contains(searchString.getSearchString())
                         || item.getDiaChi().contains(searchString.getSearchString())
                         || item.getDienTich().toString().contains(searchString.getSearchString())
-                        || item.getNgayBatDau().toString().contains(searchString.getSearchString())
+                        || item.getProject().getTenDuAn().toString().contains(searchString.getSearchString())
         ).collect(Collectors.toList());
-        return new ResponseEntity<>(projects, HttpStatus.OK);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 }
