@@ -1,7 +1,13 @@
 package backend.realestate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "image")
@@ -10,7 +16,9 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private String title;
     @Lob
+    @Column(name = "image", length = 1004857)
     private String image;
 
     @NotBlank(message = "Thông tin không được bỏ trống")
@@ -20,7 +28,21 @@ public class Image {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @OneToMany(mappedBy = "rootImage",
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JsonIgnoreProperties("hotpot")
+    private Set<HotPot> hotPotList;
+
     public Image() {
+    }
+
+    public Set<HotPot> getHotPotList() {
+        return hotPotList;
+    }
+
+    public void setHotPotList(Set<HotPot> hotPotList) {
+        this.hotPotList = hotPotList;
     }
 
     public Long getId() {
@@ -29,6 +51,14 @@ public class Image {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getImage() {
