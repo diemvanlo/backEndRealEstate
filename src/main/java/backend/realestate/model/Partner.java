@@ -10,7 +10,9 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Entity
-@Table(name = "partner")
+@Table(name = "partner", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"email"})
+})
 public class Partner {
 
     @Id
@@ -34,7 +36,6 @@ public class Partner {
 
     @NotBlank
     @Size(max = 50)
-    @NaturalId
     @Email(message = "Sai định dạng email")
     private String email;
 
