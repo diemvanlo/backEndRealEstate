@@ -1,5 +1,8 @@
 package backend.realestate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,10 +14,12 @@ public class HotPot {
 
     @ManyToOne
     @JoinColumn(name = "rootImage_id")
+    @JsonIgnoreProperties("rootImage")
     Image rootImage;
 
     @ManyToOne
     @JoinColumn(name = "linkedImage_id")
+    @JsonIgnoreProperties("linkedImage")
     Image linkedImage;
 
     private Double xIndex;
@@ -30,6 +35,7 @@ public class HotPot {
         this.id = id;
     }
 
+    @JsonIgnoreProperties("hotPotList")
     public Image getRootImage() {
         return rootImage;
     }
@@ -38,6 +44,7 @@ public class HotPot {
         this.rootImage = rootImage;
     }
 
+    @JsonIgnoreProperties("hotPotList")
     public Image getLinkedImage() {
         return linkedImage;
     }

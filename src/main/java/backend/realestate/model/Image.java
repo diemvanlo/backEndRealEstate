@@ -31,7 +31,7 @@ public class Image {
     @OneToMany(mappedBy = "rootImage",
             cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @JsonIgnoreProperties("hotpot")
+    @JsonIgnoreProperties("hotPotList")
     private Set<HotPot> hotPotList;
 
     public Image() {
