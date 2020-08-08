@@ -1,5 +1,6 @@
 package backend.realestate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -77,6 +78,7 @@ public class Image {
         this.dinhDang = dinhDang;
     }
 
+    @JsonIgnoreProperties(value = {"images"})
     public Product getProduct() {
         return product;
     }
