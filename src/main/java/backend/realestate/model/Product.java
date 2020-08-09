@@ -39,20 +39,17 @@ public class Product {
     private Double giaTien;
 
     @Size(max = 200, message = "Mô tả phải trong vòng 200 ký tự")
-    @NotBlank(message = "Thông tin không được bỏ trống")
     private String moTa;
 
     @DateTimeFormat(pattern = "MM-dd-yyyy")
     @NotBlank(message = "Thông tin không được bỏ trống")
     private Date ngayTao;
 
-    @NotBlank(message = "Thông tin không được bỏ trống")
     private String tienDo;
 
-    @NotBlank(message = "Thông tin không được bỏ trống")
-    private Integer trangThai;
+    private String trangThai;
 
-    private Integer views;
+    private String views;
 
     @OneToMany(mappedBy = "product",
             cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
@@ -127,19 +124,19 @@ public class Product {
         this.tienDo = tienDo;
     }
 
-    public Integer getTrangThai() {
+    public String getTrangThai() {
         return trangThai;
     }
 
-    public void setTrangThai(Integer trangThai) {
+    public void setTrangThai(String trangThai) {
         this.trangThai = trangThai;
     }
 
-    public Integer getViews() {
+    public String getViews() {
         return views;
     }
 
-    public void setViews(Integer views) {
+    public void setViews(String views) {
         this.views = views;
     }
 
@@ -159,7 +156,7 @@ public class Product {
         this.images = images;
     }
 
-    public Product(Long id, @Size(min = 3, max = 50, message = "Tên phải lớn hơn 3 và bé hơn 50") @NotBlank(message = "Thông tin không được bỏ trống") String tenSanPham, @NotBlank(message = "Thông tin không được bỏ trống") Project project, @Size(max = 200, message = "Địa chỉ phải trong vòng 200 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String diaChi, @NotBlank(message = "Thông tin không được bỏ trống") Double dienTich, @NotBlank(message = "Thông tin không được bỏ trống") Double giaTien, @Size(max = 200, message = "Mô tả phải trong vòng 200 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String moTa, @NotBlank(message = "Thông tin không được bỏ trống") Date ngayTao, @NotBlank(message = "Thông tin không được bỏ trống") String tienDo, @NotBlank(message = "Thông tin không được bỏ trống") Integer trangThai, Integer views, List<Image> images) {
+    public Product(Long id, @Size(min = 3, max = 50, message = "Tên phải lớn hơn 3 và bé hơn 50") @NotBlank(message = "Thông tin không được bỏ trống") String tenSanPham, @NotBlank(message = "Thông tin không được bỏ trống") Project project, @Size(max = 200, message = "Địa chỉ phải trong vòng 200 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String diaChi, @NotBlank(message = "Thông tin không được bỏ trống") Double dienTich, @NotBlank(message = "Thông tin không được bỏ trống") Double giaTien, @Size(max = 200, message = "Mô tả phải trong vòng 200 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String moTa, @NotBlank(message = "Thông tin không được bỏ trống") Date ngayTao, @NotBlank(message = "Thông tin không được bỏ trống") String tienDo, @NotBlank(message = "Thông tin không được bỏ trống") String trangThai, String views, List<Image> images) {
         this.id = id;
         this.tenSanPham = tenSanPham;
         this.project = project;
