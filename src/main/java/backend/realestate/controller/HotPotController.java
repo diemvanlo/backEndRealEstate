@@ -40,6 +40,7 @@ public class HotPotController {
     @GetMapping("/")
     public ResponseEntity<List<HotPot>> getAll() throws IOException {
         List<HotPot> hotPots = hotPotRepository.findAll();
+        hotPots.removeIf(hotpot -> hotpot.getId() == 3);
         return new ResponseEntity<>(hotPots, HttpStatus.OK);
     }
 
