@@ -14,12 +14,12 @@ public class HotPot {
 
     @ManyToOne
     @JoinColumn(name = "rootImage_id")
-    @JsonIgnoreProperties("rootImage")
+    @JsonIgnoreProperties("product")
     Image rootImage;
 
     @ManyToOne
     @JoinColumn(name = "linkedImage_id")
-    @JsonIgnoreProperties("linkedImage")
+    @JsonIgnoreProperties("product")
     Image linkedImage;
 
     private Double xIndex;
