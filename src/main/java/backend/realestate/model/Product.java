@@ -26,6 +26,7 @@ public class Product {
     @NotBlank(message = "Thông tin không được bỏ trống")
     @ManyToOne
     @JoinColumn(name = "project_id")
+    @JsonIgnoreProperties("product")
     private Project project;
 
     @Size(max = 200, message = "Địa chỉ phải trong vòng 200 ký tự")
