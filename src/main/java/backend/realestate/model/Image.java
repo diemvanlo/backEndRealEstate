@@ -78,7 +78,7 @@ public class Image {
         this.dinhDang = dinhDang;
     }
 
-    @JsonIgnoreProperties(value = {"images"})
+    @JsonIgnoreProperties(value = {"images", "project"})
     public Product getProduct() {
         return product;
     }
