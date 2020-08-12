@@ -141,6 +141,7 @@ public class Product {
         this.views = views;
     }
 
+    @JsonIgnoreProperties("image")
     public Project getProject() {
         return project;
     }
@@ -149,6 +150,7 @@ public class Product {
         this.project = project;
     }
 
+    @JsonIgnoreProperties(value = {"product", "hotPotList"})
     public List<Image> getImages() {
         return images;
     }

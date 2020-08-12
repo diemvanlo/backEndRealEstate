@@ -66,12 +66,13 @@ public class Project {
     @OneToMany(mappedBy = "project",
             cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @JsonIgnoreProperties("product")
+    @JsonIgnoreProperties(value = {"project", "images"})
     private List<Product> product;
 
     public Project() {
     }
 
+    @JsonIgnoreProperties(value = {"project", "images"})
     public List<Product> getProduct() {
         return product;
     }
