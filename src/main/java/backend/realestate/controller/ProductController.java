@@ -91,7 +91,7 @@ public class ProductController {
                 item -> item.getId().toString().contains(searchString.getSearchString())
                         || item.getTenSanPham().contains(searchString.getSearchString())
                         || item.getDiaChi().contains(searchString.getSearchString())
-                        || item.getDienTich().toString().contains(searchString.getSearchString())
+                        || (item.getDienTich() != null && item.getDienTich().toString().contains(searchString.getSearchString()))
                         || item.getProject().getTenDuAn().toString().contains(searchString.getSearchString())
         ).collect(Collectors.toList());
         return new ResponseEntity<>(products, HttpStatus.OK);
