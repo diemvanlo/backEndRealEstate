@@ -178,7 +178,7 @@ public class Product {
         this.views = views;
     }
 
-    @JsonIgnoreProperties("image")
+    @JsonIgnoreProperties(value = {"image", "product"})
     public Project getProject() {
         return project;
     }

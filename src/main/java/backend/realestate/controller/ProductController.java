@@ -8,12 +8,14 @@ import backend.realestate.repository.ProjectRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.awt.print.Pageable;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +51,13 @@ public class ProductController {
             productRepository.save(product);
         }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
+    }
+
+    @GetMapping("/getPage/{page}/{size}")
+    public ResponseEntity<List<Product>> getPage(@PathVariable int page, @PathVariable int size) throws IOException {
+        PageRequest pageable = PageRequest.of(page, size);
+        List<Product> products = productRepository.findAll(pageable).toList();
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/")
@@ -92,7 +101,7 @@ public class ProductController {
                         || item.getTenSanPham().contains(searchString.getSearchString())
                         || item.getDiaChi().contains(searchString.getSearchString())
                         || (item.getDienTich() != null && item.getDienTich().toString().contains(searchString.getSearchString()))
-                        || item.getProject().getTenDuAn().toString().contains(searchString.getSearchString())
+                        || item.getProject().getTenDuAn().contains(searchString.getSearchString())
         ).collect(Collectors.toList());
         return new ResponseEntity<>(products, HttpStatus.OK);
     }

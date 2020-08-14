@@ -1,5 +1,6 @@
 package backend.realestate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -96,7 +97,8 @@ public class Project {
         this.updatedDate = updatedDate;
     }
 
-    @JsonIgnoreProperties(value = {"project", "images"})
+//    @JsonIgnoreProperties(value = {"project", "images"})
+    @JsonIgnore
     public List<Product> getProduct() {
         return product;
     }
