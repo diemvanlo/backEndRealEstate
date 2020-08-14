@@ -4,6 +4,7 @@ import backend.realestate.message.request.SearchForm;
 import backend.realestate.message.response.ResponseMessage;
 import backend.realestate.model.Product;
 import backend.realestate.repository.ProductRepository;
+import backend.realestate.repository.ProjectRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ public class ProductController {
     @Autowired
     ProductRepository productRepository;
 
+    @Autowired
+    ProjectRepository projectRepository;
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Product product) throws IOException {
@@ -48,6 +51,12 @@ public class ProductController {
     public ResponseEntity<?> showEditForm(@PathVariable Long id) {
         Product product = productRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("Fail! -> Không tìm thấy phòng ban này"));
+        return new ResponseEntity<>(product, HttpStatus.OK);
+    }
+
+    @GetMapping("/getByProjectId/{id}")
+    public ResponseEntity<?> getByProjectId(@PathVariable Long id) {
+        List<Product> product = productRepository.getAllByProject_Id(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
