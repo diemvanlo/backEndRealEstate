@@ -34,10 +34,20 @@ public class ProductController {
 
     @Autowired
     ProjectRepository projectRepository;
+
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Product product) throws IOException {
         productRepository.save(product);
+        return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
+    }
+
+    @PostMapping("/saveList")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> saveList(@RequestBody List<Product> products) throws IOException {
+        for (Product product : products) {
+            productRepository.save(product);
+        }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 
