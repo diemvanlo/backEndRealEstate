@@ -58,6 +58,9 @@ public class Product {
     @JsonIgnoreProperties("images")
     private List<Image> images;
 
+    @Lob
+    private String image;
+
     public Product() {
     }
 
@@ -87,6 +90,14 @@ public class Product {
 
     public Double getDienTich() {
         return dienTich;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public void setDienTich(Double dienTich) {
