@@ -22,11 +22,13 @@ public class User {
     private String fullName;
     @Size(min = 3, max = 50, message = "Tên phải bé hơn 3 và lớn hơn 50")
     @NotBlank(message = "Thông tin không được bỏ trống")
+    @Column(name = "username", length = 30)
     private String username;
     @NotBlank
     @NaturalId
     @Size(max = 50)
     @Email(message = "Sai định dạng email")
+    @Column(name = "email", length = 30)
     private String email;
     @NotBlank
     @Size(min = 6, max = 100)

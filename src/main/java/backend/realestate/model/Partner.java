@@ -37,6 +37,7 @@ public class Partner {
     @NotBlank
     @Size(max = 50)
     @Email(message = "Sai định dạng email")
+    @Column(name = "email", length = 30)
     private String email;
 
     @Lob
