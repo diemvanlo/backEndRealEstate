@@ -47,7 +47,6 @@ public class Image {
     public Image() {
     }
 
-    @JsonIgnoreProperties(value = {"linkedImage", "rootImage"})
     public Set<HotPot> getHotPotList() {
         return hotPotList;
     }

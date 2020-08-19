@@ -44,7 +44,7 @@ public class HotPot {
         this.rootImage = rootImage;
     }
 
-    @JsonIgnoreProperties("hotPotList")
+    @JsonIgnoreProperties(value = {"hotPotList","product","image"})
     public Image getLinkedImage() {
         return linkedImage;
     }
