@@ -105,5 +105,4 @@ public class News {
         this.views = views;
     }
 
-
 }

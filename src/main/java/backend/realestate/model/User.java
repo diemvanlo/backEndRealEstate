@@ -1,5 +1,6 @@
 package backend.realestate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -36,6 +37,9 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    private Agent agent;
 
     public User(@Size(min = 3, max = 50, message = "Tên phải bé hơn 3 và lớn hơn 50") @NotBlank(message = "Thông tin không được bỏ trống") String fullName
             , @Size(min = 3, max = 50, message = "Tên phải bé hơn 3 và lớn hơn 50") @NotBlank(message = "Thông tin không được bỏ trống") String username
@@ -48,6 +52,14 @@ public class User {
     }
 
     public User() {
+    }
+
+    public Agent getAgent() {
+        return agent;
+    }
+
+    public void setAgent(Agent agent) {
+        this.agent = agent;
     }
 
     public Long getId() {
