@@ -3,10 +3,12 @@ package backend.realestate.controller;
 import backend.realestate.message.request.SearchForm;
 import backend.realestate.message.response.ResponseMessage;
 import backend.realestate.model.News;
+import backend.realestate.model.Product;
 import backend.realestate.repository.NewsRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,6 +51,13 @@ public class NewsController {
         News news = newsRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("Fail! -> Không tìm thấy phòng ban này"));
         return new ResponseEntity<>(news, HttpStatus.OK);
+    }
+
+    @GetMapping("/getPage/{page}/{size}")
+    public ResponseEntity<List<News>> getPage(@PathVariable int page, @PathVariable int size) throws IOException {
+        PageRequest pageable = PageRequest.of(page, size);
+        List<News> products = newsRepository.findAll(pageable).toList();
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @PostMapping("/delete")
