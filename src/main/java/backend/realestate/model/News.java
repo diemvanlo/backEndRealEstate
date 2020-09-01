@@ -30,6 +30,8 @@ public class News {
     @Lob
     private String content;
     @Lob
+    private String description;
+    @Lob
     private String image;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -37,6 +39,14 @@ public class News {
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedDate;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public News() {
     }

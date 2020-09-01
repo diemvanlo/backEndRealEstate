@@ -56,8 +56,8 @@ public class NewsController {
     @GetMapping("/getPage/{page}/{size}")
     public ResponseEntity<List<News>> getPage(@PathVariable int page, @PathVariable int size) throws IOException {
         PageRequest pageable = PageRequest.of(page, size);
-        List<News> products = newsRepository.findAll(pageable).toList();
-        return new ResponseEntity<>(products, HttpStatus.OK);
+        List<News> newsList = newsRepository.findAll(pageable).toList();
+        return new ResponseEntity<>(newsList, HttpStatus.OK);
     }
 
     @PostMapping("/delete")
