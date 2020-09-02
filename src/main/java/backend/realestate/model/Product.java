@@ -49,7 +49,8 @@ public class Product {
     @NotBlank(message = "Thông tin không được bỏ trống")
     private Double giaTien;
 
-    @Size(max = 200, message = "Mô tả phải trong vòng 200 ký tự")
+    @Lob
+    @Column(name = "mo_ta", length = 2000)
     private String moTa;
 
     @DateTimeFormat(pattern = "MM-dd-yyyy")
