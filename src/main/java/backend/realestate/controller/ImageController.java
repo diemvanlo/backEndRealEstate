@@ -3,10 +3,12 @@ package backend.realestate.controller;
 import backend.realestate.message.request.SearchForm;
 import backend.realestate.message.response.ResponseMessage;
 import backend.realestate.model.Image;
+import backend.realestate.model.Product;
 import backend.realestate.repository.ImageRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -71,6 +73,13 @@ public class ImageController {
         images = images.stream().filter(
                 item -> item.getId().toString().contains(searchString.getSearchString())
         ).collect(Collectors.toList());
+        return new ResponseEntity<>(images, HttpStatus.OK);
+    }
+
+    @GetMapping("/getPage/{page}/{size}")
+    public ResponseEntity<List<Image>> getPage(@PathVariable int page, @PathVariable int size) throws IOException {
+        PageRequest pageable = PageRequest.of(page, size);
+        List<Image> images = imageRepository.findAll(pageable).toList();
         return new ResponseEntity<>(images, HttpStatus.OK);
     }
 }

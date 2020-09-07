@@ -2,11 +2,13 @@ package backend.realestate.controller;
 
 import backend.realestate.message.request.SearchForm;
 import backend.realestate.message.response.ResponseMessage;
+import backend.realestate.model.Product;
 import backend.realestate.model.Project;
 import backend.realestate.repository.ProjectRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -75,6 +77,13 @@ public class ProjectController {
                         || ((item.getDienTich()!= null) && item.getDienTich().toString().contains(searchString.getSearchString()))
                         || (!item.getNgayBatDau().toString().isEmpty() && item.getNgayBatDau().toString().contains(searchString.getSearchString()))
         ).collect(Collectors.toList());
+        return new ResponseEntity<>(projects, HttpStatus.OK);
+    }
+
+    @GetMapping("/getPage/{page}/{size}")
+    public ResponseEntity<List<Project>> getPage(@PathVariable int page, @PathVariable int size) throws IOException {
+        PageRequest pageable = PageRequest.of(page, size);
+        List<Project> projects = projectRepository.findAll(pageable).toList();
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 }
