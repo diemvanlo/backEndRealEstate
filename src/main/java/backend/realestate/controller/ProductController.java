@@ -105,4 +105,11 @@ public class ProductController {
         ).collect(Collectors.toList());
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
+
+    @GetMapping("/getRelactiveProduct/{id}")
+    public ResponseEntity<?> getRelactiveProduct(@PathVariable Long id) {
+        Product product = productRepository.findById(id).get();
+        List<Product> products = productRepository.findAllByCreatedDateAfterOrderByCreatedDateDesc(product.getCreatedDate());
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
 }

@@ -103,7 +103,7 @@ public class Image {
         this.dinhDang = dinhDang;
     }
 
-    @JsonIgnoreProperties(value = {"images", "project"})
+    @JsonIgnoreProperties(value = {"images", "project","image", })
     public Product getProduct() {
         return product;
     }

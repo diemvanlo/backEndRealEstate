@@ -82,4 +82,10 @@ public class ImageController {
         List<Image> images = imageRepository.findAll(pageable).toList();
         return new ResponseEntity<>(images, HttpStatus.OK);
     }
+
+    @GetMapping("/getByProductId/{id}")
+    public ResponseEntity<List<Image>> getByProductId(@PathVariable long id){
+        List<Image> images = imageRepository.getAllByProduct_IdAndAndDinhDang(id, "Ảnh 360");
+        return new ResponseEntity<>(images, HttpStatus.OK);
+    }
 }
