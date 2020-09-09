@@ -53,6 +53,12 @@ public class NewsController {
         return new ResponseEntity<>(news, HttpStatus.OK);
     }
 
+
+    @GetMapping("/getCountItem")
+    public ResponseEntity<?> getCountItem() {
+        return new ResponseEntity<>(newsRepository.getItemCount(), HttpStatus.OK);
+    }
+
     @GetMapping("/getPage/{page}/{size}")
     public ResponseEntity<List<News>> getPage(@PathVariable int page, @PathVariable int size) throws IOException {
         PageRequest pageable = PageRequest.of(page, size);

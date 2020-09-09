@@ -88,4 +88,9 @@ public class ImageController {
         List<Image> images = imageRepository.getAllByProduct_IdAndAndDinhDang(id, "Ảnh 360");
         return new ResponseEntity<>(images, HttpStatus.OK);
     }
+
+    @GetMapping("/getCountItem")
+    public ResponseEntity<?> getCountItem() {
+        return new ResponseEntity<>(imageRepository.getItemCount(), HttpStatus.OK);
+    }
 }

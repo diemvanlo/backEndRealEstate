@@ -112,4 +112,9 @@ public class ProductController {
         List<Product> products = productRepository.findAllByCreatedDateAfterOrderByCreatedDateDesc(product.getCreatedDate());
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
+
+    @GetMapping("/getCountItem")
+    public ResponseEntity<?> getCountItem() {
+        return new ResponseEntity<>(productRepository.getItemCount(), HttpStatus.OK);
+    }
 }

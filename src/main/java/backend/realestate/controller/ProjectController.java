@@ -74,7 +74,7 @@ public class ProjectController {
                 item -> item.getId().toString().contains(searchString.getSearchString())
                         || (!item.getTenDuAn().isEmpty() && item.getTenDuAn().contains(searchString.getSearchString()))
                         || (!item.getDiaChi().isEmpty() && item.getDiaChi().contains(searchString.getSearchString()))
-                        || ((item.getDienTich()!= null) && item.getDienTich().toString().contains(searchString.getSearchString()))
+                        || ((item.getDienTich() != null) && item.getDienTich().toString().contains(searchString.getSearchString()))
                         || (!item.getNgayBatDau().toString().isEmpty() && item.getNgayBatDau().toString().contains(searchString.getSearchString()))
         ).collect(Collectors.toList());
         return new ResponseEntity<>(projects, HttpStatus.OK);
@@ -85,5 +85,10 @@ public class ProjectController {
         PageRequest pageable = PageRequest.of(page, size);
         List<Project> projects = projectRepository.findAll(pageable).toList();
         return new ResponseEntity<>(projects, HttpStatus.OK);
+    }
+
+    @GetMapping("/getCountItem")
+    public ResponseEntity<?> getCountItem() {
+        return new ResponseEntity<>(projectRepository.getItemCount(), HttpStatus.OK);
     }
 }
