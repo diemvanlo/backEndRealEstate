@@ -1,12 +1,16 @@
 package backend.realestate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.List;
 import java.util.Set;
 
 @Table(name = "users", uniqueConstraints = {
@@ -40,6 +44,19 @@ public class User {
     @OneToOne(mappedBy = "user")
     @JsonIgnore
     private Agent agent;
+    @OneToMany(mappedBy = "toUser",
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JsonIgnore
+    private List<Message> message;
+
+    public List<Message> getMessage() {
+        return message;
+    }
+
+    public void setMessage(List<Message> message) {
+        this.message = message;
+    }
 
     public User(@Size(min = 3, max = 50, message = "Tên phải bé hơn 3 và lớn hơn 50") @NotBlank(message = "Thông tin không được bỏ trống") String fullName
             , @Size(min = 3, max = 50, message = "Tên phải bé hơn 3 và lớn hơn 50") @NotBlank(message = "Thông tin không được bỏ trống") String username
