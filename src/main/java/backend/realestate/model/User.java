@@ -49,6 +49,9 @@ public class User {
     @Fetch(value = FetchMode.SUBSELECT)
     @JsonIgnore
     private List<Message> message;
+    @Lob
+    @Column(name = "image", columnDefinition="LONGBLOB")
+    private String image;
 
     public List<Message> getMessage() {
         return message;
@@ -69,6 +72,14 @@ public class User {
     }
 
     public User() {
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Agent getAgent() {
