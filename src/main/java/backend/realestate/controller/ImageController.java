@@ -65,15 +65,9 @@ public class ImageController {
 
     @PostMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> delete(@RequestBody Long id) {
+    public ResponseEntity<String> delete(@RequestBody Long id) throws InterruptedException, ExecutionException, IOException {
         imageRepository.deleteById(id);
-        try {
-            elasticsearchDao.delete6(id);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        elasticsearchDao.delete6(id);
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 

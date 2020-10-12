@@ -74,6 +74,8 @@ public class ProjectController {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }

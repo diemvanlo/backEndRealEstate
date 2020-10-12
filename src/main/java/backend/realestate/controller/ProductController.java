@@ -111,6 +111,8 @@ public class ProductController {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
@@ -135,7 +137,7 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
     @PostMapping("/searchAllColumn2")
-    public ResponseEntity<?> showEditForm2(@RequestBody SearchForm searchString) throws ExecutionException, InterruptedException {
+    public ResponseEntity<?> showEditForm2(@RequestBody SearchForm searchString) throws ExecutionException, InterruptedException, IOException {
         QueryBuilder query;
         if (Strings.isEmpty(searchString.getSearchString())) {
             query = QueryBuilders.matchAllQuery();

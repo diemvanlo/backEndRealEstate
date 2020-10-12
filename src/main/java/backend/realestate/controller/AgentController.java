@@ -111,7 +111,11 @@ public class AgentController {
     public ResponseEntity<String> delete(@RequestBody Long id) {
         agentRepository.deleteById(id);
         try {
-            elasticsearchDao.delete2(id);
+            try {
+                elasticsearchDao.delete2(id);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
