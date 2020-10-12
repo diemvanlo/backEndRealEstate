@@ -77,6 +77,10 @@ public class Product {
     @Lob
     private String image;
 
+    private double latX;
+
+    private double longY;
+
     public Product() {
     }
 
@@ -90,6 +94,22 @@ public class Product {
 
     public Date getCreatedDate() {
         return createdDate;
+    }
+
+    public double getLatX() {
+        return latX;
+    }
+
+    public void setLatX(double latX) {
+        this.latX = latX;
+    }
+
+    public double getLongY() {
+        return longY;
+    }
+
+    public void setLongY(double longY) {
+        this.longY = longY;
     }
 
     public void setCreatedDate(Date createdDate) {

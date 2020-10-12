@@ -32,6 +32,8 @@ public class News {
     @Lob
     private String description;
     @Lob
+
+    @Column(name = "image", columnDefinition="LONGBLOB")
     private String image;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
