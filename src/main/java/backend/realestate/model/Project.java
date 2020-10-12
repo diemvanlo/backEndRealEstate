@@ -211,4 +211,7 @@ public class Project {
         this.banKinh = banKinh;
     }
 
+    public String idAsString() {
+        return id != null ? "" + id : null;
+    }
 }

@@ -98,6 +98,9 @@ public class Product {
     public void setId(Long id) {
         this.id = id;
     }
+    public String idAsString() {
+        return id != null ? "" + id : null;
+    }
 
     public String getTenSanPham() {
         return tenSanPham;

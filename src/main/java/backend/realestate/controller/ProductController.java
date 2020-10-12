@@ -1,5 +1,6 @@
 package backend.realestate.controller;
 
+import backend.realestate.dao.ElasticsearchDao;
 import backend.realestate.message.request.SearchForm;
 import backend.realestate.message.response.ResponseMessage;
 import backend.realestate.model.Product;
@@ -7,6 +8,10 @@ import backend.realestate.repository.ProductRepository;
 import backend.realestate.repository.ProjectRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
+import org.apache.logging.log4j.util.Strings;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -18,6 +23,7 @@ import javax.validation.Valid;
 import java.awt.print.Pageable;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,19 +42,35 @@ public class ProductController {
 
     @Autowired
     ProjectRepository projectRepository;
+    @Autowired
+    ElasticsearchDao elasticsearchDao;
 
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Product product) throws IOException {
         productRepository.save(product);
+        try {
+            elasticsearchDao.save(product);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 
     @PostMapping("/saveList")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> saveList(@RequestBody List<Product> products) throws IOException {
         for (Product product : products) {
             productRepository.save(product);
+            try {
+                elasticsearchDao.save(product);
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
@@ -83,6 +105,13 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> delete(@RequestBody Long id) {
         productRepository.deleteById(id);
+        try {
+            elasticsearchDao.delete(id);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 
@@ -105,7 +134,31 @@ public class ProductController {
         ).collect(Collectors.toList());
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
+    @PostMapping("/searchAllColumn2")
+    public ResponseEntity<?> showEditForm2(@RequestBody SearchForm searchString) throws ExecutionException, InterruptedException {
+        QueryBuilder query;
+        if (Strings.isEmpty(searchString.getSearchString())) {
+            query = QueryBuilders.matchAllQuery();
+        } else {
+            query = QueryBuilders.multiMatchQuery(searchString.getSearchString())
+                    .field("tenSanPham", 3.0f).field("fulltext").fuzziness(1);
+        }
+        SearchResponse response = elasticsearchDao.search(query, 0, 10);
+        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+    }
 
+//    public String search(String q, Integer from, Integer size) throws IOException, ExecutionException, InterruptedException {
+//        QueryBuilder query;
+//        if (Strings.isEmpty(q)) {
+//            query = QueryBuilders.matchAllQuery();
+//        } else {
+//            query = QueryBuilders.multiMatchQuery(q)
+//                    .field("tensanpham",3.0f).field("fulltext").fuzziness(1);
+//        }
+//        String test = query.queryName();
+//        SearchResponse response = elasticsearchDao.search(query, from, size);
+//        return response.toString();
+//    }
     @GetMapping("/getRelactiveProduct/{id}")
     public ResponseEntity<?> getRelactiveProduct(@PathVariable Long id) {
         Product product = productRepository.findById(id).get();

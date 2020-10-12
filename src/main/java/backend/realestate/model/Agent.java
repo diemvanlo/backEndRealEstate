@@ -49,6 +49,9 @@ public class Agent {
     public String getContent() {
         return content;
     }
+    public String idAsString() {
+        return id != null ? "" + id : null;
+    }
 
     public void setContent(String content) {
         this.content = content;
