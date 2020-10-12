@@ -112,6 +112,10 @@ public class Image {
         this.product = product;
     }
 
+    public String idAsString() {
+        return id != null ? "" + id : null;
+    }
+
     public Image(Long id, @NotBlank(message = "Ảnh không được bỏ trống") String image, @NotBlank(message = "Thông tin không được bỏ trống") Long idSanPham, @NotBlank(message = "Thông tin không được bỏ trống") String dinhDang, Product product) {
         this.id = id;
         this.image = image;

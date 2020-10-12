@@ -1,5 +1,6 @@
 package backend.realestate.controller;
 
+import backend.realestate.dao.ElasticsearchDao;
 import backend.realestate.message.request.SearchForm;
 import backend.realestate.message.response.ResponseMessage;
 import backend.realestate.model.News;
@@ -7,6 +8,7 @@ import backend.realestate.model.Product;
 import backend.realestate.repository.NewsRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -32,11 +35,20 @@ public class NewsController {
 
     @Autowired
     NewsRepository newsRepository;
+    @Autowired
+    ElasticsearchDao elasticsearchDao;
 
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody News news) throws IOException {
         newsRepository.save(news);
+        try {
+            elasticsearchDao.save(news);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 
@@ -70,6 +82,13 @@ public class NewsController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> delete(@RequestBody Long id) {
         newsRepository.deleteById(id);
+        try {
+            elasticsearchDao.delete3(id);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 

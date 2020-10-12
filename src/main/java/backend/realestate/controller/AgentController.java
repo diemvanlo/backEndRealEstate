@@ -1,5 +1,6 @@
 package backend.realestate.controller;
 
+import backend.realestate.dao.ElasticsearchDao;
 import backend.realestate.message.request.SearchForm;
 import backend.realestate.message.response.ResponseMessage;
 import backend.realestate.model.Agent;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -41,11 +43,19 @@ public class AgentController {
 
     @Autowired
     UserRepository userRepository;
-
+    @Autowired
+    ElasticsearchDao elasticsearchDao;
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Agent agent) throws IOException {
         agentRepository.save(agent);
+        try {
+            elasticsearchDao.save(agent);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 
@@ -100,6 +110,13 @@ public class AgentController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> delete(@RequestBody Long id) {
         agentRepository.deleteById(id);
+        try {
+            elasticsearchDao.delete2(id);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 

@@ -117,4 +117,7 @@ public class News {
         this.views = views;
     }
 
+    public String idAsString() {
+        return id != null ? "" + id : null;
+    }
 }

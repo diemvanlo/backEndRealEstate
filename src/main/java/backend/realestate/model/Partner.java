@@ -128,6 +128,10 @@ public class Partner {
         this.soVonDauTu = soVonDauTu;
     }
 
+    public String idAsString() {
+        return id != null ? "" + id : null;
+    }
+
     public Partner(Long id, @Size(min = 3, max = 100, message = "Tên phải lớn hơn 3 và bé hơn 100") @NotBlank(message = "Thông tin không được bỏ trống") String tenDoiTac, @NotBlank String linhVuc, @Size(max = 100, message = "Địa chỉ phải ít hơn 100 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String diaChi, @Size(max = 12, message = "Số điện thoại phải ít hơn 12 ký tự") @NotBlank(message = "Thông tin không được bỏ trống") String sdt, @NotBlank @Size(max = 50) @Email(message = "Sai định dạng email") String email, String logo, @NotBlank(message = "Số vốn không được bỏ trống") Double soVonDauTu, List<Project> projects) {
         this.id = id;
         this.tenDoiTac = tenDoiTac;

@@ -1,5 +1,6 @@
 package backend.realestate.controller;
 
+import backend.realestate.dao.ElasticsearchDao;
 import backend.realestate.message.request.SearchForm;
 import backend.realestate.message.response.ResponseMessage;
 import backend.realestate.model.Category;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -30,11 +32,20 @@ public class CategoryController {
 
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    ElasticsearchDao elasticsearchDao;
 
     @PostMapping("/save")
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Category category) throws IOException {
         categoryRepository.save(category);
+        try {
+            elasticsearchDao.save(category);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 
@@ -55,6 +66,13 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> delete(@RequestBody Long id) {
         categoryRepository.deleteById(id);
+        try {
+            elasticsearchDao.delete5(id);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 

@@ -52,6 +52,10 @@ public class Category {
         this.name = name;
     }
 
+    public String idAsString() {
+        return id != null ? "" + id : null;
+    }
+
     public Category(Long id, @NotBlank(message = "Thông tin không được để trống") String name) {
         this.id = id;
         this.name = name;
