@@ -44,7 +44,6 @@ public class Project {
     private Double chiPhiDuAn;
 
     @DateTimeFormat(pattern = "MM-dd-yyyy")
-//    @NotBlank(message = "Thông tin không được bỏ trống")
     private Date ngayBatDau;
 
     @Lob

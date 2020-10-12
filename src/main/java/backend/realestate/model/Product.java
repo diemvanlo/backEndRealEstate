@@ -25,11 +25,16 @@ public class Product {
     @NotBlank(message = "Thông tin không được bỏ trống")
     private String tenSanPham;
 
-    @NotBlank(message = "Thông tin không được bỏ trống")
     @ManyToOne
     @JoinColumn(name = "project_id")
     @JsonIgnoreProperties("product")
     private Project project;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    @JsonIgnoreProperties("product")
+    private Category category;
+
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -73,6 +78,14 @@ public class Product {
     private String image;
 
     public Product() {
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public Date getCreatedDate() {
