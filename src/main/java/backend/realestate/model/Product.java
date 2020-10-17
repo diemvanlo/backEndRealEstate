@@ -29,7 +29,6 @@ public class Product {
     @JoinColumn(name = "project_id")
     @JsonIgnoreProperties("product")
     private Project project;
-
     @ManyToOne
     @JoinColumn(name = "category_id")
     @JsonIgnoreProperties("product")

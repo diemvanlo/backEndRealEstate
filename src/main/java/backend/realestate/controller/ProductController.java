@@ -49,13 +49,8 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Product product) throws IOException {
         productRepository.save(product);
-        try {
-            elasticsearchDao.save(product);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        elasticsearchDao.save(product);
+
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 
@@ -64,13 +59,8 @@ public class ProductController {
     public ResponseEntity<?> saveList(@RequestBody List<Product> products) throws IOException {
         for (Product product : products) {
             productRepository.save(product);
-            try {
-                elasticsearchDao.save(product);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            elasticsearchDao.save(product);
+
         }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
@@ -105,13 +95,7 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> delete(@RequestBody Long id) {
         productRepository.deleteById(id);
-        try {
-            elasticsearchDao.delete(id);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 
@@ -134,6 +118,7 @@ public class ProductController {
         ).collect(Collectors.toList());
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
+
     @PostMapping("/searchAllColumn2")
     public ResponseEntity<?> showEditForm2(@RequestBody SearchForm searchString) throws ExecutionException, InterruptedException {
         QueryBuilder query;
@@ -143,11 +128,16 @@ public class ProductController {
             query = QueryBuilders.multiMatchQuery(searchString.getSearchString())
                     .field("tenSanPham", 3.0f).field("fulltext").fuzziness(1);
         }
-        SearchResponse response = elasticsearchDao.search(query, 0, 10);
+        SearchResponse response = null;
+        try {
+            response = elasticsearchDao.search(query, 0, 10);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 
-//    public String search(String q, Integer from, Integer size) throws IOException, ExecutionException, InterruptedException {
+    //    public String search(String q, Integer from, Integer size) throws IOException, ExecutionException, InterruptedException {
 //        QueryBuilder query;
 //        if (Strings.isEmpty(q)) {
 //            query = QueryBuilders.matchAllQuery();

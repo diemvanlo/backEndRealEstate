@@ -1,151 +1,192 @@
 package backend.realestate.dao;
 
+import backend.realestate.configuration.Config;
 import backend.realestate.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.pilato.elasticsearch.tools.ElasticsearchBeyonder;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
+import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.main.MainResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
-import org.elasticsearch.search.aggregations.bucket.histogram.ExtendedBounds;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 @Component
 public class ElasticsearchDao {
-    private final Client esClient;
+    private final RestHighLevelClient esClient;
     private final ObjectMapper mapper;
     private final BulkProcessor bulkProcessor;
+    private final Logger logger = LoggerFactory.getLogger(ElasticsearchDao.class);
 
-    public ElasticsearchDao(ObjectMapper mapper) {
+    public ElasticsearchDao(ObjectMapper mapper) throws IOException {
+        String clusterUrl = "https://product-7114141628.ap-southeast-2.bonsaisearch.net:443";
+        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("ajxaypur1l", "9priwv4uq4"));
+        this.esClient = new RestHighLevelClient(RestClient.builder(HttpHost.create(clusterUrl))
+                .setHttpClientConfigCallback(hcb -> hcb.setDefaultCredentialsProvider(credentialsProvider)));
+
         this.mapper = mapper;
-        esClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
-                new TransportAddress(
-                        new InetSocketAddress("127.0.0.1", 9300)));
-        this.bulkProcessor = BulkProcessor.builder(esClient, new BulkProcessor.Listener() {
-            @Override
-            public void beforeBulk(long l, BulkRequest bulkRequest) {
+        this.bulkProcessor = BulkProcessor.builder(
+                (request, bulkListener) -> esClient.bulkAsync(request, RequestOptions.DEFAULT, bulkListener),
+                new BulkProcessor.Listener() {
+                    @Override
+                    public void beforeBulk(long executionId, BulkRequest request) {
+                        logger.debug("going to execute bulk of {} requests", request.numberOfActions());
+                    }
 
-            }
+                    @Override
+                    public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
+                        logger.debug("bulk executed {} failures", response.hasFailures() ? "with" : "without");
+                    }
 
-            @Override
-            public void afterBulk(long l, BulkRequest bulkRequest, BulkResponse bulkResponse) {
-
-            }
-
-            @Override
-            public void afterBulk(long l, BulkRequest bulkRequest, Throwable throwable) {
-
-            }
-        }).setBulkActions(1000).setFlushInterval(TimeValue.timeValueSeconds(5)).build();
-        try {
-            ElasticsearchBeyonder.start(esClient);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                    @Override
+                    public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
+                        logger.warn("error while executing bulk", failure);
+                    }
+                })
+                .setBulkActions(10000)
+                .setFlushInterval(TimeValue.timeValueSeconds(5))
+                .build();
     }
 
-    public void save(Product product) throws JsonProcessingException, ExecutionException, InterruptedException {
+    public void save(Product product) throws IOException {
         byte[] bytes = mapper.writeValueAsBytes(product);
-        esClient.index(new IndexRequest("product", "doc", product.idAsString()).source(bytes, XContentType.JSON)).get();
-    }
-    public void save(Agent agent) throws JsonProcessingException, ExecutionException, InterruptedException {
-        byte[] bytes = mapper.writeValueAsBytes(agent);
-        esClient.index(new IndexRequest("agent", "doc", agent.idAsString()).source(bytes, XContentType.JSON)).get();
-    }
-    public void save(Project project) throws JsonProcessingException, ExecutionException, InterruptedException {
-        byte[] bytes = mapper.writeValueAsBytes(project);
-        esClient.index(new IndexRequest("project", "doc", project.idAsString()).source(bytes, XContentType.JSON)).get();
-    }
-    public void save(News news) throws JsonProcessingException, ExecutionException, InterruptedException {
-        byte[] bytes = mapper.writeValueAsBytes(news);
-        esClient.index(new IndexRequest("news", "doc", news.idAsString()).source(bytes, XContentType.JSON)).get();
-    }
-    public void save(Partner partner) throws JsonProcessingException, ExecutionException, InterruptedException {
-        byte[] bytes = mapper.writeValueAsBytes(partner);
-        esClient.index(new IndexRequest("partner", "doc", partner.idAsString()).source(bytes, XContentType.JSON)).get();
-    }
-    public void save(Category category) throws JsonProcessingException, ExecutionException, InterruptedException {
-        byte[] bytes = mapper.writeValueAsBytes(category);
-        esClient.index(new IndexRequest("category", "doc", category.idAsString()).source(bytes, XContentType.JSON)).get();
-    }
-    public void save(Image image) throws JsonProcessingException, ExecutionException, InterruptedException {
-        byte[] bytes = mapper.writeValueAsBytes(image);
-        esClient.index(new IndexRequest("image", "doc", image.idAsString()).source(bytes, XContentType.JSON)).get();
+        bulkProcessor.add(new IndexRequest("product", "_doc").id(product.idAsString()).source(bytes, XContentType.JSON));
+
     }
 
-    public void delete(Long id) throws ExecutionException, InterruptedException {
-        esClient.delete(new DeleteRequest("product", "doc", id.toString())).get();
-    }
-    public void delete1(Long id) throws ExecutionException, InterruptedException {
-        esClient.delete(new DeleteRequest("project", "doc", id.toString())).get();
-    }
-    public void delete2(Long id) throws ExecutionException, InterruptedException {
-        esClient.delete(new DeleteRequest("agent", "doc", id.toString())).get();
-    }
-    public void delete3(Long id) throws ExecutionException, InterruptedException {
-        esClient.delete(new DeleteRequest("news", "doc", id.toString())).get();
-    }
-    public void delete4(Long id) throws ExecutionException, InterruptedException {
-        esClient.delete(new DeleteRequest("partner", "doc", id.toString())).get();
-    }
-    public void delete5(Long id) throws ExecutionException, InterruptedException {
-        esClient.delete(new DeleteRequest("category", "doc", id.toString())).get();
-    }
-    public void delete6(Long id) throws ExecutionException, InterruptedException {
-        esClient.delete(new DeleteRequest("image", "doc", id.toString())).get();
-    }
-
-    public SearchResponse search(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException {
+    public SearchResponse search(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException, IOException {
         SearchResponse response = esClient.search(new SearchRequest("product").source(
-                new SearchSourceBuilder().query(query).from(from).size(size))).get();
+                new SearchSourceBuilder().query(query).from(from).size(size)));
         return response;
     }
-    public SearchResponse search1(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException {
-        SearchResponse response = esClient.search(new SearchRequest("project").source(
-                new SearchSourceBuilder().query(query).from(from).size(size))).get();
-        return response;
+//    public SearchResponse search(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException, IOException {
+//        logger.debug("elasticsearch query: {}", query.toString());
+//        SearchResponse response = esClient.search(new SearchRequest("product")
+//                .source(new SearchSourceBuilder()
+//                        .query(query)
+//                        .from(from)
+//                        .size(size)
+//                        .trackTotalHits(true)
+//                        .sort(SortBuilders.scoreSort())
+//                ), RequestOptions.DEFAULT);
+//
+//        logger.debug("elasticsearch response: {} hits", response.getHits().getTotalHits());
+//        logger.trace("elasticsearch response: {} hits", response.toString());
+//        return response;
+//    }
+//    public ElasticsearchDao(ObjectMapper mapper) {
+//        this.mapper = mapper;
+//        this.esClient = new RestHighLevelClient(
+//                RestClient.builder(new HttpHost("https://ajxaypur1l:9priwv4uq4@product-7114141628.ap-southeast-2.bonsaisearch.net", 443, "https")));
+//    }
+
+//    public void save(Product product) throws IOException, ExecutionException, InterruptedException, IOException {
+//        byte[] bytes = mapper.writeValueAsBytes(product);
+//        IndexRequest indexRequest = new IndexRequest("product-9315306240", "doc", product.idAsString());
+//        System.out.println(mapper.writeValueAsString(product));
+//        IndexRequest request = new IndexRequest("product");
+//        request.source(mapper.writeValueAsString(product), XContentType.JSON);
+////        highLevelClient.get(indexRequest)
+//        highLevelClient.index(request);
+//    }
+
+    public void save(Agent agent) throws IOException, ExecutionException, InterruptedException, IOException {
+        byte[] bytes = mapper.writeValueAsBytes(agent);
+        esClient.index(new IndexRequest("agent", "doc", agent.idAsString()).source(bytes, XContentType.JSON));
     }
-    public SearchResponse search2(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException {
-        SearchResponse response = esClient.search(new SearchRequest("agent").source(
-                new SearchSourceBuilder().query(query).from(from).size(size))).get();
-        return response;
+
+    public void save(Project project) throws IOException, ExecutionException, InterruptedException, IOException {
+        byte[] bytes = mapper.writeValueAsBytes(project);
+        esClient.index(new IndexRequest("project", "doc", project.idAsString()).source(bytes, XContentType.JSON));
     }
-    public SearchResponse search3(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException {
-        SearchResponse response = esClient.search(new SearchRequest("news").source(
-                new SearchSourceBuilder().query(query).from(from).size(size))).get();
-        return response;
+
+    public void save(News news) throws IOException, ExecutionException, InterruptedException, IOException {
+        byte[] bytes = mapper.writeValueAsBytes(news);
+        esClient.index(new IndexRequest("news", "doc", news.idAsString()).source(bytes, XContentType.JSON));
     }
-    public SearchResponse search4(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException {
-        SearchResponse response = esClient.search(new SearchRequest("partner").source(
-                new SearchSourceBuilder().query(query).from(from).size(size))).get();
-        return response;
+
+    public void save(Partner partner) throws IOException, ExecutionException, InterruptedException, IOException {
+        byte[] bytes = mapper.writeValueAsBytes(partner);
+        esClient.index(new IndexRequest("partner", "doc", partner.idAsString()).source(bytes, XContentType.JSON));
     }
-    public SearchResponse search5(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException {
-        SearchResponse response = esClient.search(new SearchRequest("category").source(
-                new SearchSourceBuilder().query(query).from(from).size(size))).get();
-        return response;
+
+    public void save(Category category) throws IOException, ExecutionException, InterruptedException, IOException {
+        byte[] bytes = mapper.writeValueAsBytes(category);
+        esClient.index(new IndexRequest("category", "doc", category.idAsString()).source(bytes, XContentType.JSON));
     }
-    public SearchResponse search6(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException {
-        SearchResponse response = esClient.search(new SearchRequest("image").source(
-                new SearchSourceBuilder().query(query).from(from).size(size))).get();
-        return response;
+
+    public void save(Image image) throws IOException, ExecutionException, InterruptedException, IOException {
+        byte[] bytes = mapper.writeValueAsBytes(image);
+        esClient.index(new IndexRequest("image", "doc", image.idAsString()).source(bytes, XContentType.JSON));
+    }
+
+    public void delete(Long id) throws ExecutionException, InterruptedException, IOException {
+        esClient.delete(new DeleteRequest("product", "doc", id.toString()));
+    }
+
+    public void delete1(Long id) throws ExecutionException, InterruptedException, IOException {
+        esClient.delete(new DeleteRequest("project", "doc", id.toString()));
+    }
+
+    public void delete2(Long id) throws ExecutionException, InterruptedException, IOException {
+        esClient.delete(new DeleteRequest("agent", "doc", id.toString()));
+    }
+
+    public void delete3(Long id) throws ExecutionException, InterruptedException, IOException {
+        esClient.delete(new DeleteRequest("news", "doc", id.toString()));
+    }
+
+    public void delete4(Long id) throws ExecutionException, InterruptedException, IOException {
+        esClient.delete(new DeleteRequest("partner", "doc", id.toString()));
+    }
+
+    public void delete5(Long id) throws ExecutionException, InterruptedException, IOException {
+        esClient.delete(new DeleteRequest("category", "doc", id.toString()));
+    }
+
+    public void delete6(Long id) throws ExecutionException, InterruptedException, IOException {
+        esClient.delete(new DeleteRequest("image", "doc", id.toString()));
     }
 
 
