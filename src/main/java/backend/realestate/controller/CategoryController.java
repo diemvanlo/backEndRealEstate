@@ -39,13 +39,6 @@ public class CategoryController {
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Category category) throws IOException {
         categoryRepository.save(category);
-        try {
-            elasticsearchDao.save(category);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 
