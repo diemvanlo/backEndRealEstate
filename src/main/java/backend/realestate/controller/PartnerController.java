@@ -39,13 +39,7 @@ public class PartnerController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Partner partner) throws IOException {
         partnerRepository.save(partner);
-        try {
-            elasticsearchDao.save(partner);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 
