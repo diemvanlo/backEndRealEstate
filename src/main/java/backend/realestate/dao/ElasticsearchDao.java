@@ -59,9 +59,9 @@ public class ElasticsearchDao {
     private final Logger logger = LoggerFactory.getLogger(ElasticsearchDao.class);
 
     public ElasticsearchDao(ObjectMapper mapper) throws IOException {
-        String clusterUrl = "https://product-7114141628.ap-southeast-2.bonsaisearch.net:443";
+        String clusterUrl = "https://product-9315306240.us-east-1.bonsaisearch.net:443";
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("ajxaypur1l", "9priwv4uq4"));
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("ub6m0bh0tg", "dwpdinw1ku"));
         this.esClient = new RestHighLevelClient(RestClient.builder(HttpHost.create(clusterUrl))
                 .setHttpClientConfigCallback(hcb -> hcb.setDefaultCredentialsProvider(credentialsProvider)));
 
@@ -97,6 +97,16 @@ public class ElasticsearchDao {
 
     public SearchResponse search(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException, IOException {
         SearchResponse response = esClient.search(new SearchRequest("product").source(
+                new SearchSourceBuilder().query(query).from(from).size(size)));
+        return response;
+    }
+    public SearchResponse search1(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException, IOException {
+        SearchResponse response = esClient.search(new SearchRequest("project").source(
+                new SearchSourceBuilder().query(query).from(from).size(size)));
+        return response;
+}
+    public SearchResponse search2(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException, IOException {
+        SearchResponse response = esClient.search(new SearchRequest("news").source(
                 new SearchSourceBuilder().query(query).from(from).size(size)));
         return response;
     }
@@ -138,12 +148,12 @@ public class ElasticsearchDao {
 
     public void save(Project project) throws IOException, ExecutionException, InterruptedException, IOException {
         byte[] bytes = mapper.writeValueAsBytes(project);
-        esClient.index(new IndexRequest("project", "doc", project.idAsString()).source(bytes, XContentType.JSON));
+        bulkProcessor.add(new IndexRequest("project", "_doc").id(project.idAsString()).source(bytes, XContentType.JSON));
     }
 
     public void save(News news) throws IOException, ExecutionException, InterruptedException, IOException {
         byte[] bytes = mapper.writeValueAsBytes(news);
-        esClient.index(new IndexRequest("news", "doc", news.idAsString()).source(bytes, XContentType.JSON));
+        bulkProcessor.add(new IndexRequest("news", "_doc").id(news.idAsString()).source(bytes, XContentType.JSON));
     }
 
     public void save(Partner partner) throws IOException, ExecutionException, InterruptedException, IOException {
@@ -162,21 +172,36 @@ public class ElasticsearchDao {
     }
 
     public void delete(Long id) throws ExecutionException, InterruptedException, IOException {
-        esClient.delete(new DeleteRequest("product", "doc", id.toString()));
+        try {
+            DeleteRequest request = new DeleteRequest("product", "_doc", id.toString());
+            esClient.delete(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void delete1(Long id) throws ExecutionException, InterruptedException, IOException {
-        esClient.delete(new DeleteRequest("project", "doc", id.toString()));
-    }
-
-    public void delete2(Long id) throws ExecutionException, InterruptedException, IOException {
-        esClient.delete(new DeleteRequest("agent", "doc", id.toString()));
+        try {
+            DeleteRequest request = new DeleteRequest("project", "_doc", id.toString());
+            esClient.delete(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void delete3(Long id) throws ExecutionException, InterruptedException, IOException {
-        esClient.delete(new DeleteRequest("news", "doc", id.toString()));
+        esClient.delete(new DeleteRequest("agent", "doc", id.toString()));
     }
 
+    public void delete2(Long id) {
+        try {
+            DeleteRequest request = new DeleteRequest("news", "_doc", id.toString());
+            esClient.delete(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     public void delete4(Long id) throws ExecutionException, InterruptedException, IOException {
         esClient.delete(new DeleteRequest("partner", "doc", id.toString()));
     }

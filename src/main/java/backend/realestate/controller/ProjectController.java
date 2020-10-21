@@ -8,6 +8,10 @@ import backend.realestate.model.Project;
 import backend.realestate.repository.ProjectRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
+import org.apache.logging.log4j.util.Strings;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -66,9 +70,9 @@ public class ProjectController {
 
     @PostMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> delete(@RequestBody Long id) {
+    public ResponseEntity<String> delete(@RequestBody Long id) throws InterruptedException, ExecutionException, IOException {
         projectRepository.deleteById(id);
-
+        elasticsearchDao.delete1(id);
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 
@@ -91,7 +95,26 @@ public class ProjectController {
         ).collect(Collectors.toList());
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
-
+    @PostMapping("/searchAllColumn2")
+    public ResponseEntity<?> showEditForm2(@RequestBody SearchForm searchString) throws ExecutionException, InterruptedException {
+        QueryBuilder query;
+        if (Strings.isEmpty(searchString.getSearchString())) {
+            query = QueryBuilders.matchAllQuery();
+        } else {
+            query = QueryBuilders.multiMatchQuery(searchString.getSearchString())
+                    .field("tenDuAn", 3.0f).field("fulltext").fuzziness(1)
+                    .field("diaChi", 3.0f).field("fulltext").fuzziness(1)
+                    .field("loaiHinh", 3.0f).field("fulltext").fuzziness(1);
+        }
+        SearchResponse response = null;
+        try {
+            response = elasticsearchDao.search1(query, 0, 10);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(response.toString());
+        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+    }
     @GetMapping("/getPage/{page}/{size}")
     public ResponseEntity<List<Project>> getPage(@PathVariable int page, @PathVariable int size) throws IOException {
         PageRequest pageable = PageRequest.of(page, size);

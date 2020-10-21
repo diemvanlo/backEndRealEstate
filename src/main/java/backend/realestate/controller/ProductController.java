@@ -126,7 +126,9 @@ public class ProductController {
             query = QueryBuilders.matchAllQuery();
         } else {
             query = QueryBuilders.multiMatchQuery(searchString.getSearchString())
-                    .field("tenSanPham", 3.0f).field("fulltext").fuzziness(1);
+                    .field("tenSanPham", 3.0f).field("fulltext").fuzziness(1)
+                     .field("diaChi", 3.0f).field("fulltext").fuzziness(1)
+                    .field("giaTien", 3.0f).field("fulltext").fuzziness(1);
         }
         SearchResponse response = null;
         try {
@@ -134,6 +136,7 @@ public class ProductController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println(response.toString());
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 

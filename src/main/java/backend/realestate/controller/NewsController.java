@@ -9,6 +9,10 @@ import backend.realestate.repository.NewsRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
 import net.bytebuddy.asm.Advice;
+import org.apache.logging.log4j.util.Strings;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -80,8 +84,9 @@ public class NewsController {
 
     @PostMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> delete(@RequestBody Long id) {
+    public ResponseEntity<String> delete(@RequestBody Long id) throws InterruptedException, ExecutionException, IOException {
         newsRepository.deleteById(id);
+        elasticsearchDao.delete2(id);
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 
@@ -100,5 +105,23 @@ public class NewsController {
                         || item.getTitle().contains(searchString.getSearchString())
         ).collect(Collectors.toList());
         return new ResponseEntity<>(newss, HttpStatus.OK);
+    }
+    @PostMapping("/searchAllColumn2")
+    public ResponseEntity<?> showEditForm2(@RequestBody SearchForm searchString) throws ExecutionException, InterruptedException {
+        QueryBuilder query;
+        if (Strings.isEmpty(searchString.getSearchString())) {
+            query = QueryBuilders.matchAllQuery();
+        } else {
+            query = QueryBuilders.multiMatchQuery(searchString.getSearchString())
+                    .field("title", 3.0f).field("fulltext").fuzziness(1);
+        }
+        SearchResponse response = null;
+        try {
+            response = elasticsearchDao.search2(query, 0, 10);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(response.toString());
+        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 }
