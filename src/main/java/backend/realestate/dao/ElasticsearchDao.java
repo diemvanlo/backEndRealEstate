@@ -201,7 +201,7 @@ public class ElasticsearchDao {
         esClient.index(new IndexRequest("image", "doc", image.idAsString()).source(bytes, XContentType.JSON));
     }
 
-    public void delete(Long id) throws ExecutionException, InterruptedException, IOException {
+    public void delete(Long id) {
         try {
             DeleteRequest request = new DeleteRequest("product", "_doc", id.toString());
             esClient.delete(request, RequestOptions.DEFAULT);
