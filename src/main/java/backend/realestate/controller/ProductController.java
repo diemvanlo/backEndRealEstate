@@ -10,8 +10,11 @@ import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
 import org.apache.logging.log4j.util.Strings;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.term.TermSuggestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.awt.print.Pageable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -46,7 +50,7 @@ public class ProductController {
     ElasticsearchDao elasticsearchDao;
 
     @PostMapping("/save")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Product product) throws IOException {
         productRepository.save(product);
         elasticsearchDao.save(product);
@@ -120,14 +124,14 @@ public class ProductController {
     }
 
     @PostMapping("/searchAllColumn2")
-    public ResponseEntity<?> showEditForm2(@RequestBody SearchForm searchString) throws ExecutionException, InterruptedException {
+    public ResponseEntity<?> searchElasticsearch(@RequestBody SearchForm searchString) throws ExecutionException, InterruptedException {
         QueryBuilder query;
         if (Strings.isEmpty(searchString.getSearchString())) {
             query = QueryBuilders.matchAllQuery();
         } else {
             query = QueryBuilders.multiMatchQuery(searchString.getSearchString())
                     .field("tenSanPham", 3.0f).field("fulltext").fuzziness(1)
-                     .field("diaChi", 3.0f).field("fulltext").fuzziness(1)
+                    .field("diaChi", 3.0f).field("fulltext").fuzziness(1)
                     .field("giaTien", 3.0f).field("fulltext").fuzziness(1);
         }
         SearchResponse response = null;
@@ -136,23 +140,29 @@ public class ProductController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(response.toString());
-        return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //    public String search(String q, Integer from, Integer size) throws IOException, ExecutionException, InterruptedException {
-//        QueryBuilder query;
-//        if (Strings.isEmpty(q)) {
-//            query = QueryBuilders.matchAllQuery();
-//        } else {
-//            query = QueryBuilders.multiMatchQuery(q)
-//                    .field("tensanpham",3.0f).field("fulltext").fuzziness(1);
-//        }
-//        String test = query.queryName();
-//        SearchResponse response = elasticsearchDao.search(query, from, size);
-//        return response.toString();
-//    }
-    @GetMapping("/getRelactiveProduct/{id}")
+    @PostMapping("/getHints")
+    public ResponseEntity<?> getHints(@RequestBody SearchForm searchString) throws ExecutionException, InterruptedException {
+        try {
+            List<TermSuggestion.Entry> suggestions = elasticsearchDao.getHints(0, 10, searchString.getSearchString());
+//            TermSuggestion.Entry term = suggestions.get(0);
+//            List<TermSuggestion.Entry.Option> options = term.getOptions();
+            List<String> texts = new ArrayList<>();
+            for (TermSuggestion.Entry entry : suggestions) {
+                for (TermSuggestion.Entry.Option option : entry.getOptions()) {
+                    texts.add(option.getText().string());
+                }
+            }
+            return new ResponseEntity<>(texts, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>("Failded", HttpStatus.OK);
+    }
+
+    @GetMapping("/getRelativeProduct/{id}")
     public ResponseEntity<?> getRelactiveProduct(@PathVariable Long id) {
         Product product = productRepository.findById(id).get();
         List<Product> products = productRepository.findAllByCreatedDateAfterOrderByCreatedDateDesc(product.getCreatedDate());

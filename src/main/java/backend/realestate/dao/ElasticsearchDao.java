@@ -35,8 +35,18 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.Suggest.Suggestion;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.SuggestionBuilder;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
+import org.elasticsearch.search.suggest.completion.context.CategoryQueryContext;
+import org.elasticsearch.search.suggest.term.TermSuggestion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +54,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -59,9 +67,9 @@ public class ElasticsearchDao {
     private final Logger logger = LoggerFactory.getLogger(ElasticsearchDao.class);
 
     public ElasticsearchDao(ObjectMapper mapper) throws IOException {
-        String clusterUrl = "https://product-9315306240.us-east-1.bonsaisearch.net:443";
+        String clusterUrl = "https://product-7114141628.ap-southeast-2.bonsaisearch.net:443";
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("ub6m0bh0tg", "dwpdinw1ku"));
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("n4omcse5ri", "xg0cbolzdp"));
         this.esClient = new RestHighLevelClient(RestClient.builder(HttpHost.create(clusterUrl))
                 .setHttpClientConfigCallback(hcb -> hcb.setDefaultCredentialsProvider(credentialsProvider)));
 
@@ -96,15 +104,37 @@ public class ElasticsearchDao {
     }
 
     public SearchResponse search(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException, IOException {
+
         SearchResponse response = esClient.search(new SearchRequest("product").source(
                 new SearchSourceBuilder().query(query).from(from).size(size)));
+
+//        SearchResponse response2 = esClient.search(new SearchRequest("product").source(
+//                new SearchSourceBuilder().query(query).from(from).size(size).suggest(skillNameSuggest)));
+//        Suggest suggestions = response2.getSuggest();
         return response;
     }
+
+    public List<TermSuggestion.Entry> getHints(Integer from, Integer size, String term) throws IOException {
+        SearchRequest searchRequest = new SearchRequest("product");
+        searchRequest.types("text");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        SuggestionBuilder termSuggestionBuilder = SuggestBuilders.termSuggestion("tenSanPham").text(term);
+        SuggestBuilder suggestBuilder = new SuggestBuilder();
+        suggestBuilder.addSuggestion("my-suggestion", termSuggestionBuilder);
+        searchSourceBuilder.suggest(suggestBuilder);
+        SearchResponse response = esClient.search(new SearchRequest("product").source(
+                new SearchSourceBuilder().from(from).size(size).suggest(suggestBuilder)));
+        Suggest suggestions = response.getSuggest();
+        List entryList = suggestions.getSuggestion("my-suggestion").getEntries();
+        return entryList;
+    }
+
     public SearchResponse search1(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException, IOException {
         SearchResponse response = esClient.search(new SearchRequest("project").source(
                 new SearchSourceBuilder().query(query).from(from).size(size)));
         return response;
-}
+    }
+
     public SearchResponse search2(QueryBuilder query, Integer from, Integer size) throws ExecutionException, InterruptedException, IOException {
         SearchResponse response = esClient.search(new SearchRequest("news").source(
                 new SearchSourceBuilder().query(query).from(from).size(size)));
@@ -202,6 +232,7 @@ public class ElasticsearchDao {
         }
 
     }
+
     public void delete4(Long id) throws ExecutionException, InterruptedException, IOException {
         esClient.delete(new DeleteRequest("partner", "doc", id.toString()));
     }
