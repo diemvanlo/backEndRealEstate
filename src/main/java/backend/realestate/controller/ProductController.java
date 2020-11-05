@@ -79,6 +79,8 @@ public class ProductController {
     @GetMapping("/")
     public ResponseEntity<List<Product>> getAll() throws IOException {
         List<Product> products = productRepository.findAll();
+        QueryBuilder query;
+        query = QueryBuilders.matchAllQuery();
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
@@ -136,11 +138,8 @@ public class ProductController {
                     .field("giaTien", 3.0f).field("fulltext").fuzziness(1);
         }
         SearchResponse response = null;
-        try {
-            response = elasticsearchDao.search(query, 0, 10);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        response = elasticsearchDao.search(query, 0, 10);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -148,8 +147,6 @@ public class ProductController {
     public ResponseEntity<?> getHints(@RequestBody SearchForm searchString) throws ExecutionException, InterruptedException {
         try {
             List<TermSuggestion.Entry> suggestions = elasticsearchDao.getHints(0, 10, searchString.getSearchString());
-//            TermSuggestion.Entry term = suggestions.get(0);
-//            List<TermSuggestion.Entry.Option> options = term.getOptions();
             List<String> texts = new ArrayList<>();
             for (TermSuggestion.Entry entry : suggestions) {
                 for (TermSuggestion.Entry.Option option : entry.getOptions()) {
@@ -173,5 +170,17 @@ public class ProductController {
     @GetMapping("/getCountItem")
     public ResponseEntity<?> getCountItem() {
         return new ResponseEntity<>(productRepository.getItemCount(), HttpStatus.OK);
+    }
+
+    @GetMapping("/synchroniseElasticsearch")
+    public ResponseEntity<?> synchroniseElasticsearch() {
+//        QueryBuilder query = QueryBuilders.matchAllQuery();
+//        SearchResponse response = elasticsearchDao.search(query, 0, 10);
+        List<Product> products = productRepository.findAll();
+        for (Product p : products
+        ) {
+            elasticsearchDao.save(p);
+        }
+        return new ResponseEntity(new ResponseMessage("Synchronise successfully"), HttpStatus.OK);
     }
 }

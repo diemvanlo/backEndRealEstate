@@ -1,5 +1,6 @@
 package backend.realestate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
@@ -69,15 +70,15 @@ public class Product {
     @OneToMany(mappedBy = "product",
             cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @JsonIgnoreProperties("images")
+    @JsonIgnore
     private List<Image> images;
 
     @Lob
     private String image;
 
-    private double latX;
+    private Double latX;
 
-    private double longY;
+    private Double longY;
 
     public Product() {
     }
@@ -94,19 +95,19 @@ public class Product {
         return createdDate;
     }
 
-    public double getLatX() {
+    public Double getLatX() {
         return latX;
     }
 
-    public void setLatX(double latX) {
+    public void setLatX(Double latX) {
         this.latX = latX;
     }
 
-    public double getLongY() {
+    public Double getLongY() {
         return longY;
     }
 
-    public void setLongY(double longY) {
+    public void setLongY(Double longY) {
         this.longY = longY;
     }
 

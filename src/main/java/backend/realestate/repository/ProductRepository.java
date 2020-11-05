@@ -15,6 +15,9 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> getAllByProject_Id(Long projectId);
 
+    @Query("SELECT id FROM Product ")
+    List<Long> getAllID();
+
     List<Product> findAllByCreatedDateAfterOrderByCreatedDateDesc(Date createdDate);
 
     @Override

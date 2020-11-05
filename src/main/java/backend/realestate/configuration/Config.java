@@ -13,7 +13,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 
 import java.net.InetAddress;
 
-@Configuration
+//@Configuration
 //@EnableElasticsearchRepositories(basePackages = "backend.realestate.dao")
 public class Config {
 
