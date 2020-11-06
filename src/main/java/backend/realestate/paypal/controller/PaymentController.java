@@ -42,36 +42,37 @@ public class PaymentController {
 					PaypalPaymentMethod.paypal, 
 					PaypalPaymentIntent.sale,
 					"payment description",
-					"localhost8080/pay/cancel",
-					"localhost8080/pay/success");
+					"http://localhost8080/pay/cancel",
+					"http://localhost8080/pay/success");
 			for(Links links : payment.getLinks()){
 				if(links.getRel().equals("approval_url")){
 					return new ResponseEntity<>("redirect:" + links.getHref(), HttpStatus.OK);
 				}
 			}
 		} catch (PayPalRESTException e) {
+			e.printStackTrace();
 			log.error(e.getMessage());
 		}
 
 		return new ResponseEntity<>("redirect:/", HttpStatus.OK);
 	}
 
-	@GetMapping(URL_PAYPAL_CANCEL)
-	public String cancelPay(){
-		return "cancel";
-	}
-
-	@GetMapping(URL_PAYPAL_SUCCESS)
-	public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId){
-		try {
-			Payment payment = paypalService.executePayment(paymentId, payerId);
-			if(payment.getState().equals("approved")){
-				return "success";
-			}
-		} catch (PayPalRESTException e) {
-			log.error(e.getMessage());
-		}
-		return "redirect:/";
-	}
+//	@GetMapping(URL_PAYPAL_CANCEL)
+//	public String cancelPay(){
+//		return "cancel";
+//	}
+//
+//	@GetMapping(URL_PAYPAL_SUCCESS)
+//	public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId){
+//		try {
+//			Payment payment = paypalService.executePayment(paymentId, payerId);
+//			if(payment.getState().equals("approved")){
+//				return "success";
+//			}
+//		} catch (PayPalRESTException e) {
+//			log.error(e.getMessage());
+//		}
+//		return "redirect:/";
+//	}
 	
 }
