@@ -1,5 +1,6 @@
 package backend.realestate.paypal.controller;
 
+import backend.realestate.message.response.ResponseMessage;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
@@ -13,14 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
+@CrossOrigin
 public class PaymentController {
 	
 	public static final String URL_PAYPAL_SUCCESS = "pay/success";
@@ -32,7 +31,7 @@ public class PaymentController {
 	private PaypalService paypalService;
 
 	@PostMapping("/pay")
-	 public ResponseEntity<String> pay( @RequestBody  double price){
+	 public ResponseEntity<?> pay( @RequestBody  double price){
 //		String cancelUrl = Utils.getBaseURL(request) + "/" + URL_PAYPAL_CANCEL;
 //		String successUrl = Utils.getBaseURL(request) + "/" + URL_PAYPAL_SUCCESS;
 		try {
@@ -46,7 +45,8 @@ public class PaymentController {
 					"http://localhost8080/pay/success");
 			for(Links links : payment.getLinks()){
 				if(links.getRel().equals("approval_url")){
-					return new ResponseEntity<>("redirect:" + links.getHref(), HttpStatus.OK);
+//					return new ResponseEntity<String>(links.getHref(), HttpStatus.OK);
+					return new ResponseEntity<>(new ResponseMessage(links.getHref()), HttpStatus.OK);
 				}
 			}
 		} catch (PayPalRESTException e) {
