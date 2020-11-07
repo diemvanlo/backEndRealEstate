@@ -49,6 +49,8 @@ public class AgentController {
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Agent agent) throws IOException {
+        User user = agent.getUser();
+        user.setPassword(encoder.encode(user.getPassword()));
         agentRepository.save(agent);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
