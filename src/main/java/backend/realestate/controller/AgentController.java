@@ -45,11 +45,20 @@ public class AgentController {
     UserRepository userRepository;
     @Autowired
     ElasticsearchDao elasticsearchDao;
+
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Agent agent) throws IOException {
         agentRepository.save(agent);
+        return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
+    }
 
+    @PostMapping("/registerAgent")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> register(@Valid @RequestBody Agent agent) throws IOException {
+        User user = agent.getUser();
+        user.setPassword(encoder.encode(user.getPassword()));
+        agentRepository.save(agent);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 
