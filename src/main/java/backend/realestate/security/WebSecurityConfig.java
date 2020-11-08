@@ -50,19 +50,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     ApplicationRunner init(RoleRepository repository, UserRepository userRepository) {
         return args -> {
             if (repository.findAll().size() == 0) {
-                Role roleUser = new Role(RoleName.ROLE_USER);
-                roleUser.setId(1L);
-                Role rolePM = new Role(RoleName.ROLE_PM);
-                roleUser.setId(2L);
-                Role roleAdmin = new Role(RoleName.ROLE_ADMIN);
-                roleUser.setId(3L);
-                repository.save(roleUser);
-                repository.save(rolePM);
-                repository.save(roleAdmin);
+//                Role roleUser = new Role(RoleName.ROLE_USER);
+//                roleUser.setId(1L);
+//                Role rolePM = new Role(RoleName.ROLE_PM);
+//                roleUser.setId(2L);
+//                Role roleAdmin = new Role(RoleName.ROLE_ADMIN);
+//                roleUser.setId(3L);
+//                repository.save(roleUser);
+//                repository.save(rolePM);
+//                repository.save(roleAdmin);
                 Set<Role> roles = new HashSet<>();
                 roles.add(repository.findByName(RoleName.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("cannot found this role")));
-                User admin = new User("liem", "liem", "dovanliem09102014@gmail.com",
-                        encoder.encode("123456"), roles
+                User admin = new User("dangdao", "dangdao", "Quocdao.roy@gmail.com",
+                        encoder.encode("dangdao123~!@"), roles
                 );
                 userRepository.save(admin);
             }
