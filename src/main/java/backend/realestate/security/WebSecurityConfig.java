@@ -59,12 +59,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                repository.save(roleUser);
 //                repository.save(rolePM);
 //                repository.save(roleAdmin);
-                Set<Role> roles = new HashSet<>();
-                roles.add(repository.findByName(RoleName.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("cannot found this role")));
-                User admin = new User("dangdao", "dangdao", "Quocdao.roy@gmail.com",
-                        encoder.encode("dangdao123~!@"), roles
-                );
-                userRepository.save(admin);
+//                Set<Role> roles = new HashSet<>();
+//                roles.add(repository.findByName(RoleName.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("cannot found this role")));
+//                User admin = new User("dangdao", "dangdao", "Quocdao.roy@gmail.com",
+//                        encoder.encode("dangdao123~!@"), roles
+//                );
+//                userRepository.save(admin);
             }
         };
     }
