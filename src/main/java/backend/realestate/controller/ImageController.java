@@ -4,6 +4,7 @@ import backend.realestate.dao.ElasticsearchDao;
 import backend.realestate.message.request.SearchForm;
 import backend.realestate.message.response.ResponseMessage;
 import backend.realestate.model.Image;
+import backend.realestate.model.Image;
 import backend.realestate.model.Product;
 import backend.realestate.repository.ImageRepository;
 import backend.realestate.repository.RoleRepository;
@@ -46,6 +47,13 @@ public class ImageController {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
+    }
+    @PostMapping("/saveList")
+    public ResponseEntity<?> saveList(@RequestBody List<Image> images) throws IOException {
+        for (Image image : images) {
+            imageRepository.save(image);
         }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
