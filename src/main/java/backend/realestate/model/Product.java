@@ -70,7 +70,7 @@ public class Product {
     @OneToMany(mappedBy = "product",
             cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
-    @JsonIgnore
+    @JsonIgnoreProperties({"product"})
     private List<Image> images;
 
     @Lob
