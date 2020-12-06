@@ -3,8 +3,11 @@ package backend.realestate.controller;
 import backend.realestate.dao.ElasticsearchDao;
 import backend.realestate.message.request.SearchForm;
 import backend.realestate.message.response.ResponseMessage;
+import backend.realestate.model.HotPot;
+import backend.realestate.model.Image;
 import backend.realestate.model.Image;
 import backend.realestate.model.Product;
+import backend.realestate.repository.HotPotRepository;
 import backend.realestate.repository.ImageRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -36,6 +40,9 @@ public class ImageController {
     ImageRepository imageRepository;
     @Autowired
     ElasticsearchDao elasticsearchDao;
+    @Autowired
+    HotPotRepository hotPotRepository;
+
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Image image) throws IOException {
@@ -46,6 +53,16 @@ public class ImageController {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
+    }
+
+    @PostMapping("/saveList")
+    public ResponseEntity<?> saveList(@RequestBody List<Image> images) throws IOException {
+        for (Image image : images) {
+            imageRepository.save(image);
+            List<Long> idList = image.getHotPotList().stream().map(HotPot::getId).collect(Collectors.toList());
+            hotPotRepository.deleteDoesNotExist(image.getId(),idList);
         }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
@@ -95,7 +112,7 @@ public class ImageController {
     }
 
     @GetMapping("/getByProductId/{id}")
-    public ResponseEntity<List<Image>> getByProductId(@PathVariable long id){
+    public ResponseEntity<List<Image>> getByProductId(@PathVariable long id) {
         List<Image> images = imageRepository.getAllByProduct_IdAndAndDinhDang(id, "Ảnh 360");
         return new ResponseEntity<>(images, HttpStatus.OK);
     }
