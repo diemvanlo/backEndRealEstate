@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -99,6 +101,7 @@ public class NewsController {
         ).collect(Collectors.toList());
         return new ResponseEntity<>(newss, HttpStatus.OK);
     }
+
     @PostMapping("/searchAllColumn2")
     public ResponseEntity<?> showEditForm2(@RequestBody SearchForm searchString) throws ExecutionException, InterruptedException {
         QueryBuilder query;
@@ -116,5 +119,12 @@ public class NewsController {
         }
         System.out.println(response.toString());
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+    }
+
+    @GetMapping("/thongke")
+    public ResponseEntity<?> statistical() throws IOException {
+
+        List<Object[]> news = newsRepository.countAllByCreatedDate();
+        return new ResponseEntity<>(news, HttpStatus.OK);
     }
 }

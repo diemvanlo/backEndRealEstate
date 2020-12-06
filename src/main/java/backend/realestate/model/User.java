@@ -51,6 +51,8 @@ public class User {
     private List<Message> message;
     @Lob
     @Column(name = "image", columnDefinition="LONGBLOB")
+    private String resetPasswordToken;
+    @Column(name = "reset_password_token")
     private String image;
 
     public List<Message> getMessage() {
@@ -132,6 +134,14 @@ public class User {
 
     public Set<Role> getRoles() {
         return roles;
+    }
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
     }
 
     public void setRoles(Set<Role> roles) {

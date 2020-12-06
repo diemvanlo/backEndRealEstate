@@ -3,6 +3,7 @@ package backend.realestate.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -34,11 +35,13 @@ public class News {
     @Lob
     @Column(name = "image", columnDefinition="LONGBLOB")
     private String image;
+
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+//    @CreatedDate
+    @Temporal(TemporalType.DATE)
     private Date createdDate;
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date updatedDate;
 
     public String getDescription() {

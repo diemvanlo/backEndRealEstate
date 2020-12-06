@@ -36,11 +36,11 @@ public class Product {
 
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date createdDate;
 
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date updatedDate;
 
     @Size(max = 200, message = "Địa chỉ phải trong vòng 200 ký tự")

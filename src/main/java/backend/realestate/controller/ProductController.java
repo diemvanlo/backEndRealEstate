@@ -183,4 +183,10 @@ public class ProductController {
         }
         return new ResponseEntity(new ResponseMessage("Synchronise successfully"), HttpStatus.OK);
     }
+    @GetMapping("/thongke")
+    public ResponseEntity<?> statistical() throws IOException {
+
+        List<Object[]> news = productRepository.countAllByCreatedDate();
+        return new ResponseEntity<>(news, HttpStatus.OK);
+    }
 }
