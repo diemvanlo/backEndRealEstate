@@ -16,6 +16,6 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     Long getItemCount();
 
     //    @Query("SELECT count(*) FROM news n ")
-    @Query(value = "select count(n.id), n.createdDate from News n group by n.createdDate")
-    List<Object[]> countAllByCreatedDate();
+    @Query(value = "select  count(n.id) as count , n.createdDate as date from News n group by n.createdDate")
+    List<Map<String, Object>> countAllByCreatedDate();
 }

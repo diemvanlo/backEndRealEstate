@@ -43,7 +43,8 @@ public class News {
     @UpdateTimestamp
     @Temporal(TemporalType.DATE)
     private Date updatedDate;
-
+    @Column
+    private Boolean active;
     public String getDescription() {
         return description;
     }
@@ -117,6 +118,14 @@ public class News {
 
     public void setViews(Integer views) {
         this.views = views;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public String idAsString() {

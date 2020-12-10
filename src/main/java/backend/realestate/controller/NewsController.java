@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,7 @@ public class NewsController {
     NewsRepository newsRepository;
     @Autowired
     ElasticsearchDao elasticsearchDao;
+
 
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
@@ -124,7 +126,19 @@ public class NewsController {
     @GetMapping("/thongke")
     public ResponseEntity<?> statistical() throws IOException {
 
-        List<Object[]> news = newsRepository.countAllByCreatedDate();
+        List<Map<String, Object>> news = newsRepository.countAllByCreatedDate();
         return new ResponseEntity<>(news, HttpStatus.OK);
+    }
+
+    @PostMapping("/active")
+    public ResponseEntity<?> active(@RequestBody Map<String, String> map) {
+//        News news = newsRepository.findById(id).orElseThrow(()
+//                -> new RuntimeException("Fail! -> Không tìm thấy tin tức này"));
+//        if (status == "enable") {
+//            news.setActive(true);
+//        } else {
+//            news.setActive(false);
+//        }
+        return new ResponseEntity(new ResponseMessage("Setstatus successfully"), HttpStatus.OK);
     }
 }

@@ -25,6 +25,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT count(*) FROM Product ")
     Long getItemCount();
-    @Query(value = "select count(n.id), p.createdDate from Product n group by n.createdDate")
+    @Query(value = "select count(n.id), n.createdDate from Product n group by n.createdDate")
     List<Object[]> countAllByCreatedDate();
 }
