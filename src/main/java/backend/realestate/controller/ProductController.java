@@ -27,6 +27,7 @@ import java.awt.print.Pageable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -186,7 +187,7 @@ public class ProductController {
     @GetMapping("/thongke")
     public ResponseEntity<?> statistical() throws IOException {
 
-        List<Object[]> news = productRepository.countAllByCreatedDate();
+        List<Map<String, Object>> news = productRepository.countAllByCreatedDate();
         return new ResponseEntity<>(news, HttpStatus.OK);
     }
 }

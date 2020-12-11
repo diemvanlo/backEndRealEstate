@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -25,6 +26,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT count(*) FROM Product ")
     Long getItemCount();
-    @Query(value = "select count(n.id), n.createdDate from Product n group by n.createdDate")
-    List<Object[]> countAllByCreatedDate();
+//    @Query(value = "select count(n.id), n.createdDate from Product n group by n.createdDate")
+    @Query(value = "select  count(n.id) as count , n.createdDate as date from Product n group by n.createdDate")
+    List<Map<String, Object>> countAllByCreatedDate();
 }
