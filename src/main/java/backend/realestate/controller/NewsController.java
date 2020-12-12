@@ -125,7 +125,6 @@ public class NewsController {
 
     @GetMapping("/thongke")
     public ResponseEntity<?> statistical() throws IOException {
-
         List<Map<String, Object>> news = newsRepository.countAllByCreatedDate();
         return new ResponseEntity<>(news, HttpStatus.OK);
     }

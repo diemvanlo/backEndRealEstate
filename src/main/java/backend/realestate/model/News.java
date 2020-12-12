@@ -1,5 +1,6 @@
 package backend.realestate.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -37,9 +38,9 @@ public class News {
     private String image;
 
     @CreationTimestamp
-//    @CreatedDate
     @Temporal(TemporalType.DATE)
     private Date createdDate;
+
     @UpdateTimestamp
     @Temporal(TemporalType.DATE)
     private Date updatedDate;
