@@ -65,7 +65,6 @@ public class ProjectController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> delete(@RequestBody Long id) throws InterruptedException, ExecutionException, IOException {
         projectRepository.deleteById(id);
-        elasticsearchDao.delete1(id);
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 

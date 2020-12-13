@@ -110,7 +110,6 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteByProduct(@RequestBody Product product) {
         productRepository.deleteById(product.getId());
-        elasticsearchDao.delete(product.getId());
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 

@@ -83,7 +83,6 @@ public class NewsController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> delete(@RequestBody Long id) throws InterruptedException, ExecutionException, IOException {
         newsRepository.deleteById(id);
-        elasticsearchDao.delete2(id);
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 
