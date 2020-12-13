@@ -11,6 +11,6 @@ import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    @Query("SELECT count(*) FROM Product ")
+    @Query("SELECT count(*) FROM Product")
     Long getItemCount();
 }

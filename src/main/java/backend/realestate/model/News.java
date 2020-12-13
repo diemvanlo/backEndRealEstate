@@ -1,8 +1,10 @@
 package backend.realestate.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -34,13 +36,16 @@ public class News {
     @Lob
     @Column(name = "image", columnDefinition="LONGBLOB")
     private String image;
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate;
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedDate;
 
+    @CreationTimestamp
+    @Temporal(TemporalType.DATE)
+    private Date createdDate;
+
+    @UpdateTimestamp
+    @Temporal(TemporalType.DATE)
+    private Date updatedDate;
+    @Column
+    private Boolean active;
     public String getDescription() {
         return description;
     }
@@ -114,6 +119,14 @@ public class News {
 
     public void setViews(Integer views) {
         this.views = views;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public String idAsString() {
