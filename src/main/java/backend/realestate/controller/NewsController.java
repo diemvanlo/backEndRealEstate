@@ -81,7 +81,6 @@ public class NewsController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> delete(@RequestBody Long id) throws InterruptedException, ExecutionException, IOException {
         newsRepository.deleteById(id);
-        elasticsearchDao.delete2(id);
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 
@@ -121,9 +120,8 @@ public class NewsController {
         return new ResponseEntity<>(response.toString(), HttpStatus.OK);
     }
 
-    @GetMapping("/thongke")
+    @GetMapping("/countAllByCreatedDate")
     public ResponseEntity<?> statistical() throws IOException {
-
         List<Map<String, Object>> news = newsRepository.countAllByCreatedDate();
         return new ResponseEntity<>(news, HttpStatus.OK);
     }

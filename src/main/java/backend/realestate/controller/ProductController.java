@@ -110,7 +110,6 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteByProduct(@RequestBody Product product) {
         productRepository.deleteById(product.getId());
-        elasticsearchDao.delete(product.getId());
         return new ResponseEntity(new ResponseMessage("Deleting successfully"), HttpStatus.OK);
     }
 
@@ -184,10 +183,14 @@ public class ProductController {
         }
         return new ResponseEntity(new ResponseMessage("Synchronise successfully"), HttpStatus.OK);
     }
-    @GetMapping("/thongke")
-    public ResponseEntity<?> statistical() throws IOException {
-
+    @GetMapping("/countAllByCreatedDate")
+    public ResponseEntity<?> countAllByCreatedDate() throws IOException {
         List<Map<String, Object>> news = productRepository.countAllByCreatedDate();
         return new ResponseEntity<>(news, HttpStatus.OK);
+    }
+
+    @GetMapping("/countProductByProject")
+    public Object[] countProductByProject(){
+        return productRepository.countProductByProject();
     }
 }

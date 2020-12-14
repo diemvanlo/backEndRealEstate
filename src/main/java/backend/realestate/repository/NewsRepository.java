@@ -12,10 +12,9 @@ import java.util.Map;
 
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long> {
-    @Query("SELECT count(*) FROM News")
+    @Query("SELECT COUNT(*) FROM News")
     Long getItemCount();
 
-    //    @Query("SELECT count(*) FROM news n ")
-    @Query(value = "select  count(n.id) as count , n.createdDate as date from News n group by n.createdDate")
+    @Query(value = "SELECT COUNT(n.id) AS count, n.createdDate AS date FROM News n GROUP BY n.createdDate")
     List<Map<String, Object>> countAllByCreatedDate();
 }
