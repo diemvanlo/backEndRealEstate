@@ -44,7 +44,7 @@ public class News {
     @Temporal(TemporalType.DATE)
     private Date updatedDate;
     @Column
-    private Boolean active;
+    private boolean active;
     public String getDescription() {
         return description;
     }
@@ -120,11 +120,11 @@ public class News {
         this.views = views;
     }
 
-    public Boolean getActive() {
+    public boolean isActive() {
         return active;
     }
 
-    public void setActive(Boolean active) {
+    public void setActive(boolean active) {
         this.active = active;
     }
 

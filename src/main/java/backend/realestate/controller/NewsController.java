@@ -22,10 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -49,6 +46,7 @@ public class NewsController {
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody News news) throws IOException {
+        news.setActive(false);
         newsRepository.save(news);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
@@ -129,16 +127,21 @@ public class NewsController {
         List<Map<String, Object>> news = newsRepository.countAllByCreatedDate();
         return new ResponseEntity<>(news, HttpStatus.OK);
     }
-
+    // chua xem -> suppend
+    // duyet ,xem roi-> enable
+    // ban ,xem roi --> disable
     @PostMapping("/active")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> active(@RequestBody Map<String, String> map) {
-//        News news = newsRepository.findById(id).orElseThrow(()
-//                -> new RuntimeException("Fail! -> Không tìm thấy tin tức này"));
-//        if (status == "enable") {
-//            news.setActive(true);
-//        } else {
-//            news.setActive(false);
-//        }
+        Long id = Long.parseLong(map.get("id"));
+        News news = newsRepository.findById(id).orElseThrow(()
+                -> new RuntimeException("Fail! -> Không tìm thấy phòng ban này"));
+        if(map.get("status").equals("enable")){
+            news.setActive(true);
+        }else{
+            news.setActive(false);
+        }
+        newsRepository.save(news);
         return new ResponseEntity(new ResponseMessage("Setstatus successfully"), HttpStatus.OK);
     }
 }
