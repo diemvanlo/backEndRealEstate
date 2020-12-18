@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/agent")
 @CrossOrigin(origins = "*", maxAge = 3600)
-public class AgentController {
+public class    AgentController {
 
     @Autowired
     AgentRepository agentRepository;
@@ -104,12 +104,13 @@ public class AgentController {
         return new ResponseEntity<>(agents, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/getAgentId/{id}")
     public ResponseEntity<?> showEditForm(@PathVariable Long id) {
         Agent agent = agentRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Fail! -> Không tìm thấy phòng ban này"));
+                -> new RuntimeException("Fail! -> Không tìm thấy chuyên gia này"));
         return new ResponseEntity<>(agent, HttpStatus.OK);
     }
+
 
     @PostMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
