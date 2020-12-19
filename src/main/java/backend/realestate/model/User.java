@@ -50,10 +50,11 @@ public class User {
     @JsonIgnore
     private List<Message> message;
     @Lob
-    @Column(name = "image", columnDefinition="LONGBLOB")
-    private String resetPasswordToken;
-    @Column(name = "reset_password_token")
+    @Column(name = "image", columnDefinition = "LONGBLOB")
     private String image;
+
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
 
     public List<Message> getMessage() {
         return message;
