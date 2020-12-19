@@ -87,7 +87,7 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/getProductId/{id}")
     public ResponseEntity<?> showEditForm(@PathVariable Long id) {
         Product product = productRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("Fail! -> Không tìm thấy phòng ban này"));
