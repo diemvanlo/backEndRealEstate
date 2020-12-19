@@ -51,7 +51,12 @@ public class    AgentController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Agent agent) throws IOException {
         User user = agent.getUser();
+        Set<Role> roles = new HashSet<>();
         user.setPassword(encoder.encode(user.getPassword()));
+        roles.add(roleRepository.findByName(RoleName.ROLE_PM).orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find.")));
+        user.setRoles(roles);
+        user.setPassword(encoder.encode(user.getPassword()));
+        agent.setUser(user);
         agentRepository.save(agent);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
