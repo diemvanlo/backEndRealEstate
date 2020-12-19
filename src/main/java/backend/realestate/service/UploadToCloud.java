@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class UploadToCloud {
     public static String uploadToCloud(String base64Img) {
-        if (base64Img.startsWith("data:image/jpeg;base64")) {
+        if (base64Img.startsWith("data:image")) {
             Cloudinary c = new Cloudinary("cloudinary://" + "792145993215497" + ":" + "wOROTNMRrWSh2mdUdwU5nJOx5PE" + "@" + "t-xanh-mi-n-trung");
             try {
                 Map response = c.uploader().upload(base64Img, ObjectUtils.emptyMap());
