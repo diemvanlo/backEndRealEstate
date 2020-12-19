@@ -196,4 +196,9 @@ public class ProductController {
     public Object[] countProductByProject() {
         return productRepository.countProductByProject();
     }
+
+    @GetMapping("/reportProductByProject")
+    public Object[] reportProductByProject() {
+        return productRepository.reportProductByProject();
+    }
 }

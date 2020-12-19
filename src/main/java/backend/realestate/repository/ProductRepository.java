@@ -34,7 +34,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "COUNT(ten_San_Pham) as count, project.image as image FROM project left join product\n" +
             "on project.id = product.project_id \n" +
             " GROUP BY project.ten_du_an, project.image", nativeQuery = true)
-    Object [] countProductByProject();
+    Object[] countProductByProject();
+
+    @Query("SELECT new map(p.project.tenDuAn AS projectName,COUNT(p.tenSanPham) as count) " +
+            "FROM Product p GROUP BY p.project.tenDuAn")
+    Object[] reportProductByProject();
 }
 
 

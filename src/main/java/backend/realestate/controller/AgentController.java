@@ -59,9 +59,13 @@ public class    AgentController {
     @PostMapping("/registerAgent")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> register(@Valid @RequestBody Agent agent) throws IOException {
-        User user = agent.getUser();
-        user.setPassword(encoder.encode(user.getPassword()));
-        user.setImage(UploadToCloud.uploadToCloud(user.getImage()));
+        User agentUser = agent.getUser();
+        Set<Role> roles = new HashSet<>();
+        agentUser.setPassword(encoder.encode(agentUser.getPassword()));
+        roles.add(roleRepository.findByName(RoleName.ROLE_PM).orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find.")));
+        agentUser.setRoles(roles);
+        agentUser.setImage(UploadToCloud.uploadToCloud(agentUser.getImage()));
+        agent.setUser(agentUser);
         agentRepository.save(agent);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
