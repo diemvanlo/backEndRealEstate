@@ -50,9 +50,6 @@ public class ImageController {
 
     @Autowired
     UserRepository userRepository;
-    Credentials credentials = GoogleCredentials.fromStream(new FileInputStream(new ClassPathResource("cre.json").getFile()));
-
-    Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
 
     @Autowired
     RoleRepository roleRepository;
