@@ -8,6 +8,7 @@ import backend.realestate.model.Project;
 import backend.realestate.repository.ProjectRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
+import backend.realestate.service.UploadToCloud;
 import org.apache.logging.log4j.util.Strings;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -44,6 +45,7 @@ public class ProjectController {
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Project project) throws IOException {
+        project.setImage(UploadToCloud.uploadToCloud(project.getImage()));
         projectRepository.save(project);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }

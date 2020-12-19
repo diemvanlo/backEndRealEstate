@@ -33,10 +33,17 @@ public class Image {
     private Product product;
 
     @OneToMany(mappedBy = "rootImage",
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}, fetch = FetchType.EAGER)
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @Fetch(value = FetchMode.SUBSELECT)
     @JsonIgnoreProperties("hotPotList")
     private Set<HotPot> hotPotList;
+
+    @OneToMany(mappedBy = "linkedImage",
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JsonIgnore
+    private Set<HotPot> hotPotLinked;
+
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
@@ -45,6 +52,14 @@ public class Image {
     private Date updatedDate;
 
     public Image() {
+    }
+
+    public Set<HotPot> getHotPotLinked() {
+        return hotPotLinked;
+    }
+
+    public void setHotPotLinked(Set<HotPot> hotPotLinked) {
+        this.hotPotLinked = hotPotLinked;
     }
 
     public Set<HotPot> getHotPotList() {
@@ -103,7 +118,7 @@ public class Image {
         this.dinhDang = dinhDang;
     }
 
-    @JsonIgnoreProperties(value = {"images", "project","image", })
+    @JsonIgnoreProperties(value = {"images", "project", "image",})
     public Product getProduct() {
         return product;
     }

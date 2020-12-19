@@ -7,6 +7,7 @@ import backend.realestate.model.Partner;
 import backend.realestate.repository.PartnerRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
+import backend.realestate.service.UploadToCloud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +39,8 @@ public class PartnerController {
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Partner partner) throws IOException {
+        partner.setLogo(UploadToCloud.uploadToCloud(partner.getLogo()));
         partnerRepository.save(partner);
-
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 

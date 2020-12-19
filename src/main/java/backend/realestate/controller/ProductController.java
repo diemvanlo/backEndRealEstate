@@ -8,6 +8,7 @@ import backend.realestate.repository.ProductRepository;
 import backend.realestate.repository.ProjectRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
+import backend.realestate.service.UploadToCloud;
 import org.apache.logging.log4j.util.Strings;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.text.Text;
@@ -53,9 +54,9 @@ public class ProductController {
     @PostMapping("/save")
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody Product product) throws IOException {
+        product.setImage(UploadToCloud.uploadToCloud(product.getImage()));
         productRepository.save(product);
         elasticsearchDao.save(product);
-
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
 
@@ -63,6 +64,7 @@ public class ProductController {
 //    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> saveList(@RequestBody List<Product> products) throws IOException {
         for (Product product : products) {
+            product.setImage(UploadToCloud.uploadToCloud(product.getImage()));
             productRepository.save(product);
             elasticsearchDao.save(product);
 
@@ -85,7 +87,7 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/getProductId/{id}")
     public ResponseEntity<?> showEditForm(@PathVariable Long id) {
         Product product = productRepository.findById(id).orElseThrow(()
                 -> new RuntimeException("Fail! -> Không tìm thấy phòng ban này"));
@@ -183,6 +185,7 @@ public class ProductController {
         }
         return new ResponseEntity(new ResponseMessage("Synchronise successfully"), HttpStatus.OK);
     }
+
     @GetMapping("/countAllByCreatedDate")
     public ResponseEntity<?> countAllByCreatedDate() throws IOException {
         List<Map<String, Object>> news = productRepository.countAllByCreatedDate();
@@ -190,7 +193,12 @@ public class ProductController {
     }
 
     @GetMapping("/countProductByProject")
-    public Object[] countProductByProject(){
+    public Object[] countProductByProject() {
         return productRepository.countProductByProject();
+    }
+
+    @GetMapping("/reportProductByProject")
+    public Object[] reportProductByProject() {
+        return productRepository.reportProductByProject();
     }
 }

@@ -11,6 +11,7 @@ import backend.realestate.repository.AgentRepository;
 import backend.realestate.repository.ProjectRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
+import backend.realestate.service.UploadToCloud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/agent")
 @CrossOrigin(origins = "*", maxAge = 3600)
-public class AgentController {
+public class    AgentController {
 
     @Autowired
     AgentRepository agentRepository;
@@ -58,8 +59,13 @@ public class AgentController {
     @PostMapping("/registerAgent")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> register(@Valid @RequestBody Agent agent) throws IOException {
-        User user = agent.getUser();
-        user.setPassword(encoder.encode(user.getPassword()));
+        User agentUser = agent.getUser();
+        Set<Role> roles = new HashSet<>();
+        agentUser.setPassword(encoder.encode(agentUser.getPassword()));
+        roles.add(roleRepository.findByName(RoleName.ROLE_PM).orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find.")));
+        agentUser.setRoles(roles);
+        agentUser.setImage(UploadToCloud.uploadToCloud(agentUser.getImage()));
+        agent.setUser(agentUser);
         agentRepository.save(agent);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
     }
@@ -77,6 +83,7 @@ public class AgentController {
         agentUser.setPassword(encoder.encode(agentUser.getPassword()));
         roles.add(roleRepository.findByName(RoleName.ROLE_PM).orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not find.")));
         agentUser.setRoles(roles);
+        agentUser.setImage(UploadToCloud.uploadToCloud(agentUser.getImage()));
         agent.setUser(agentUser);
         agentRepository.save(agent);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
@@ -86,6 +93,9 @@ public class AgentController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> saveList(@RequestBody List<Agent> agents) throws IOException {
         for (Agent agent : agents) {
+            User agentUser = agent.getUser();
+            agentUser.setImage(UploadToCloud.uploadToCloud(agentUser.getImage()));
+            agent.setUser(agentUser);
             agentRepository.save(agent);
         }
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
@@ -104,12 +114,13 @@ public class AgentController {
         return new ResponseEntity<>(agents, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/getAgentId/{id}")
     public ResponseEntity<?> showEditForm(@PathVariable Long id) {
         Agent agent = agentRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Fail! -> Không tìm thấy phòng ban này"));
+                -> new RuntimeException("Fail! -> Không tìm thấy chuyên gia này"));
         return new ResponseEntity<>(agent, HttpStatus.OK);
     }
+
 
     @PostMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
