@@ -32,8 +32,6 @@ public class PaymentController {
 
 	@PostMapping("/pay")
 	 public ResponseEntity<?> pay( @RequestBody  double price){
-//		String cancelUrl = Utils.getBaseURL(request) + "/" + URL_PAYPAL_CANCEL;
-//		String successUrl = Utils.getBaseURL(request) + "/" + URL_PAYPAL_SUCCESS;
 		try {
 			Payment payment = paypalService.createPayment(
 					price, 
@@ -41,8 +39,8 @@ public class PaymentController {
 					PaypalPaymentMethod.paypal, 
 					PaypalPaymentIntent.sale,
 					"payment description",
-					"http://localhost8080/pay/cancel",
-					"http://localhost8080/pay/success");
+					"http://homespace.website:8081",
+					"http://homespace.website:8081");
 			for(Links links : payment.getLinks()){
 				if(links.getRel().equals("approval_url")){
 //					return new ResponseEntity<String>(links.getHref(), HttpStatus.OK);
