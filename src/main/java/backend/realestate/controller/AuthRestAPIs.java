@@ -97,7 +97,7 @@ public class AuthRestAPIs {
         String token = RandomString.make(30);
         try {
             userService.updateResetPasswordToken(token, email);
-            String resetPasswordLink = "http://localhost:4200/#/" + "reset_password?token=" + token;
+            String resetPasswordLink = "http://homespace.website:8081/#/" + "reset_password?token=" + token;
             sendEmail(email, resetPasswordLink);
         } catch (UserNotFoundException ex) {
             ex.printStackTrace();

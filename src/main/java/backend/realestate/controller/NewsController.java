@@ -8,6 +8,7 @@ import backend.realestate.model.Product;
 import backend.realestate.repository.NewsRepository;
 import backend.realestate.repository.RoleRepository;
 import backend.realestate.repository.UserRepository;
+import backend.realestate.service.UploadToCloud;
 import net.bytebuddy.asm.Advice;
 import org.apache.logging.log4j.util.Strings;
 import org.elasticsearch.action.search.SearchResponse;
@@ -46,6 +47,7 @@ public class NewsController {
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> add(@Valid @RequestBody News news) throws IOException {
+        news.setImage(UploadToCloud.uploadToCloud(news.getImage()));
         news.setActive(false);
         newsRepository.save(news);
         return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
