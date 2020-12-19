@@ -13,7 +13,9 @@ import backend.realestate.security.jwt.JwtProvider;
 import backend.realestate.service.UserNotFoundException;
 import backend.realestate.service.UserService;
 import net.bytebuddy.utility.RandomString;
+import org.hibernate.mapping.Any;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -34,6 +36,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -94,7 +97,7 @@ public class AuthRestAPIs {
         String token = RandomString.make(30);
         try {
             userService.updateResetPasswordToken(token, email);
-            String resetPasswordLink = "http://homespace.website:8081/#/" + "reset_password?token=" + token;
+            String resetPasswordLink = "http://localhost:4200/#/" + "reset_password?token=" + token;
             sendEmail(email, resetPasswordLink);
         } catch (UserNotFoundException ex) {
             ex.printStackTrace();
@@ -118,22 +121,11 @@ public class AuthRestAPIs {
        msg.setText(content);
         this.mailSender.send(msg);
     }
-    @GetMapping("/reset_password")
-    public ResponseEntity<?> showResetPasswordForm(@PathVariable String token){
-       User user = userService.getByResetPasswordToken(token);
-       if (user == null){
-           return new ResponseEntity<>(new ResponseMessage("Fail -> email không đúng "), HttpStatus.BAD_REQUEST);
-       } else{
-           user.setResetPasswordToken(token);
-       }
-        return new ResponseEntity<>(new ResponseMessage("done"), HttpStatus.OK);
-    }
     @PostMapping("/reset_password")
-    public ResponseEntity<?> processResetPassword(@RequestBody String password){
-    User user = new User();
-    String token = user.getResetPasswordToken();
-    user = userService.getByResetPasswordToken(token);
-    userService.updatePassword(user, password);
-        return new ResponseEntity<>(new ResponseMessage("Adding successfully"), HttpStatus.OK);
+    public ResponseEntity<?> processResetPassword(@RequestBody Map<String, String> map){
+    User user = userRepository.findByResetPasswordToken(map.get("token"));
+    user.setPassword(encoder.encode(map.get("password")));
+    userRepository.save(user);
+        return new ResponseEntity(new ResponseMessage("update password successfully"), HttpStatus.OK);
     }
 }
