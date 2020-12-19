@@ -30,7 +30,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(value = "SELECT COUNT(n.id) AS count, n.createdDate AS date FROM Product n GROUP BY n.createdDate")
     List<Map<String, Object>> countAllByCreatedDate();
 
-    @Query("SELECT new map(p.project.tenDuAn AS projectName,COUNT(p.tenSanPham) as count) FROM Product p GROUP BY p.project.tenDuAn")
+    @Query(value = "SELECT  project.ten_du_an AS projectName,\n" +
+            "COUNT(ten_San_Pham) as count, project.image as image FROM project left join product\n" +
+            "on project.id = product.project_id \n" +
+            " GROUP BY project.ten_du_an, project.image", nativeQuery = true)
     Object [] countProductByProject();
 }
 
